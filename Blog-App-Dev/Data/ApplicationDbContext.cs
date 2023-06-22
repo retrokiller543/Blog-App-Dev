@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Blog_App_Dev.Data
 {
     public class ApplicationDbContext : IdentityDbContext
-    { 
+    {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
