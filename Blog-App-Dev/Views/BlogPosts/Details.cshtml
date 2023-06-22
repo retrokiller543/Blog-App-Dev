@@ -1,0 +1,67 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
+
+@model Blog_App_Dev.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Details";
+    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>@Html.DisplayFor(model => model.Title)</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DatePosted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DatePosted)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+    </dl>
+</div>
+@if (User.Identity.IsAuthenticated && (userId == Model.UserID || User.IsInRole("Admin")))
+{
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
+        <a asp-action="Delete" asp-route-id="@Model?.ID">Delete</a>
+
+    </div>
+}
+<a asp-action="Index">Back to List</a>
+<a href="@Url.Action("Create", "Comments", new { postId = ViewBag.PostID })">Add Comment</a>
+
+<h3>Comments</h3>
+@if (Model?.Comments != null && Model.Comments.Any())
+{
+    foreach (var comment in Model.Comments)
+    {
+        <section class="comment">
+        <div>
+            <h4>@Html.DisplayFor(_ => comment.Title)</h4>
+            <p>@Html.DisplayFor(_ => comment.Content)</p>
+        </div>
+        @if (User.Identity.IsAuthenticated && (userId == comment.UserID || User.IsInRole("Admin")))
+        {
+            <div>
+                <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.ID">Edit</a> |
+                <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.ID">Delete</a>
+
+            </div>
+        }
+        </section>
+    }
+}
+else
+{
+    <p>No comments yet.</p>
+}

@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Blog_App_Dev.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Forum</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+@foreach (var blogPost in Model)
+{
+    <h2><a asp-action="Details" asp-route-id="@blogPost.ID">@blogPost.Title</a></h2>
+    <p>@blogPost.Content</p>
+    <p>Posted by @(blogPost.User?.UserName ?? "Unknown") on @blogPost.DatePosted</p>
+}
+
