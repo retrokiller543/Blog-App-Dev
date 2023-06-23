@@ -1,0 +1,47 @@
+﻿@model Blog_App_Dev.Models.ApplicationUser
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h3>User Information</h3>
+    <p>
+        <strong>User Name:</strong> @Model.UserName <br />
+        <strong>Email:</strong> @Model.Email <br />
+        <strong>Number of Posts:</strong> @ViewBag.PostCount <br />
+        <strong>Number of Comments:</strong> @ViewBag.CommentCount <br />
+    </p>
+</div>
+
+<div>
+    <h3>Posts by @Model.UserName</h3>
+    <ul>
+        @foreach (var post in Model.Posts)
+        {
+            <li>
+                <h4>@post.Title</h4>
+                <p>@post.Content</p>
+                <p><strong>Date Posted:</strong> @post.DatePosted.ToShortDateString()</p>
+                <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })">View Post</a>
+            </li>
+        }
+    </ul>
+</div>
+
+<div>
+    <h3>Comments by @Model.UserName</h3>
+    <ul>
+        @foreach (var comment in Model.Comments)
+        {
+            <li>
+                <h4>@comment.Title</h4>
+                <p>@comment.Content</p>
+                <p><strong>Date Posted:</strong> @comment.DatePosted.ToShortDateString()</p>
+                <a href="@Url.Action("Details", "BlogPosts", new { id = comment.PostID })">View Related Post</a>
+            </li>
+        }
+    </ul>
+</div>
