@@ -4,6 +4,7 @@ namespace Blog_App_Dev.Models
 {
     public class BlogPost
     {
+        [Key]
         [Required]
         public int ID { get; set; }
         [Required]

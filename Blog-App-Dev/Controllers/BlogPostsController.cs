@@ -13,7 +13,6 @@ using System.Reflection.Metadata;
 
 namespace Blog_App_Dev.Controllers
 {
-    [Authorize]
     public class BlogPostsController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -29,7 +28,7 @@ namespace Blog_App_Dev.Controllers
         public async Task<IActionResult> Index()
         {
             var blogPosts = await _context.BlogPosts
-                        .Include(b => b.User) // This is the eager loading part
+                        .Include(b => b.User)
                         .ToListAsync();
 
             return View(blogPosts);

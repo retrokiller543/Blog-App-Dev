@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ApplicationUser>
+﻿@model IEnumerable<UserViewModel>
+
 
 @{
     ViewBag.Title = "Manage Users";
@@ -15,14 +16,14 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var userRoles in Model)
         {
             <tr>
-                <td>@user.Email</td>
-                <td>@user.Role</td> <!-- You'll need to adjust this based on how you're storing roles -->
+                <td>@userRoles.User.Email</td>
+                <td>@string.Join(", ", userRoles.Roles)</td>
                 <td>
-                    <a href="@Url.Action("EditUser", new { id = user.Id })">Edit</a> |
-                    <a href="@Url.Action("DeleteUser", new { id = user.Id })">Delete</a>
+                    <a href="@Url.Action("EditUser", new { id = userRoles.User.Id })">Edit</a> |
+                    <a href="@Url.Action("DeleteUser", new { id = userRoles.User.Id })">Delete</a>
                 </td>
             </tr>
         }

@@ -1,0 +1,30 @@
+﻿@model EditUserViewModel
+
+<h1>Edit User</h1>
+
+<form method="post">
+    <div>
+        <label for="Email">Email</label>
+        <input type="email" id="Email" name="Email" value="@Model.Email" readonly />
+    </div>
+
+    <div>
+        <label for="Roles">Roles</label>
+        <select id="Roles" name="Roles" multiple>
+            @foreach (var role in Model.AllRoles)
+            {
+                if (Model.Roles.Contains(role))
+                {
+                    <option value="@role" selected>@role</option>
+                }
+                else
+                {
+                    <option value="@role">@role</option>
+                }
+            }
+
+        </select>
+    </div>
+
+    <button type="submit">Save</button>
+</form>

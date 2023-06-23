@@ -6,6 +6,6 @@
 
 <p>Are you sure you want to delete all posts? This action cannot be undone.</p>
 
-<form method="post">
+<form method="post" action="@Url.Action("DeleteAllPostsConfirmed")">
     <input type="submit" value="Delete All Posts" />
 </form>
