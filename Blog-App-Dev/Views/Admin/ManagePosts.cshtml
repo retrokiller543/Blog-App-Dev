@@ -1,0 +1,30 @@
+﻿@model IEnumerable<BlogPost>
+
+@{
+    ViewBag.Title = "Manage Posts";
+}
+
+<h1>Manage Posts</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model)
+        {
+            <tr>
+                <td>@post.Title</td>
+                <td>@post.User.Email</td>
+                <td>
+                    <a href="@Url.Action("EditPost", new { id = post.ID })">Edit</a> |
+                    <a href="@Url.Action("DeletePost", new { id = post.ID })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

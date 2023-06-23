@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<h1>Admin Dashboard</h1>
+
+<p>Welcome to the admin dashboard.</p>
+
+<p>Here are some quick links to help you manage the site:</p>
+
+<ul>
+    <li><a href="@Url.Action("ManageUsers")">Manage Users</a></li>
+    <li><a href="@Url.Action("ManagePosts")">Manage Posts</a></li>
+    <li><a href="@Url.Action("DeleteAllPosts")">Delete All Posts</a></li>
+    <li><a href="@Url.Action("ClearDatabase")">Clear Database</a></li>
+</ul>

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<ApplicationUser>
+
+@{
+    ViewBag.Title = "Manage Users";
+}
+
+<h1>Manage Users</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.Role</td> <!-- You'll need to adjust this based on how you're storing roles -->
+                <td>
+                    <a href="@Url.Action("EditUser", new { id = user.Id })">Edit</a> |
+                    <a href="@Url.Action("DeleteUser", new { id = user.Id })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
