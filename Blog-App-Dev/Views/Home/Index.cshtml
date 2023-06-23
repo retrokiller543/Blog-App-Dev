@@ -26,10 +26,12 @@
         <h2>Top Users</h2>
         @foreach (var user in Model.TopUsers)
         {
-            <div class="item-card user">
-                <h3>@user.UserName</h3>
-                <p>Posts: @Model.LatestPosts.Count(p => p.UserID == user.Id)</p>
-            </div>
+            <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="item-card-link">
+                <div class="item-card item-card-hover user">
+                    <h3>@user.UserName</h3>
+                    <p>Posts: @Model.LatestPosts.Count(p => p.UserID == user.Id)</p>
+                </div>
+            </a>
         }
     </div>
 </section>
