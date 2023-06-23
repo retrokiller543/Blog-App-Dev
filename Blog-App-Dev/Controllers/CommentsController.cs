@@ -72,7 +72,7 @@ namespace Blog_App_Dev.Controllers
                 comment.UserID = _userManager.GetUserId(currentUser);
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "BlogPosts", new { id = postID });
             }
             return View(comment);
         }
