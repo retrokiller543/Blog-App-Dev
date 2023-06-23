@@ -50,7 +50,7 @@ nav ul {
             color: #333;
         }
 
-nav {
+header {
     position: fixed;
     top: 0;
     left: 0;
@@ -61,6 +61,7 @@ nav {
 
 main {
     padding: 20px;
+    margin-top: 6rem;
 }
 
 section {
@@ -82,6 +83,20 @@ footer {
     display: flex;
 }
 
+.card {
+    border: 1px solid #cccccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: rgba(249, 249, 249, 0.5);
+}
+
+.item-card-link {
+    text-decoration: none;
+    color: black;
+}
+
 .comment {
     display: flex;
     justify-content: space-between;
@@ -90,5 +105,24 @@ footer {
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
-    background-color: #f9f9f9;
+    background-color: #f9f9f940;
+}
+
+.item-card {
+    border: 1px solid #cccccc;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #f9f9f940;
+    transition: transform 0.3s ease;
+}
+
+.item-card.user {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-card-hover:hover {
+    transform: scale(1.1);
 }
