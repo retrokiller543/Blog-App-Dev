@@ -12,9 +12,13 @@ using System.Net;
 using RestSharp;
 using Microsoft.CodeAnalysis;
 using NuGet.ProjectModel;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Blog_App_Dev.Controllers
 {
+    [Authorize(Roles = "User,Admin")]
     public class MoviesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +30,21 @@ namespace Blog_App_Dev.Controllers
 
         public IActionResult SearchMovie(string title)
         {
+            var moviesInDb = _context.Movies
+                .Where(predicate: m => m.Title.Contains(title))
+                    .Include(m => m.Regions)
+                    .ThenInclude(r => r.StreamingServices)
+                    .Include(m => m.Cast)
+                    .Include(m => m.Directors)
+                    .Include(m => m.Genres)
+                .ToList();
+
+            if (moviesInDb.Any())
+            {
+                // If any movies are found in the database, return them
+                return View(moviesInDb);
+            }
+
             var client = new RestClient("https://streaming-availability.p.rapidapi.com/v2/search/title?title=" + title + "&country=us&show_type=movie&output_language=en");
             var request = new RestRequest();
             request.AddHeader("X-RapidAPI-Key", "346e77a6f3msh163186a7d97775fp1d3a0djsn807dde9d0dce");
@@ -89,7 +108,7 @@ namespace Blog_App_Dev.Controllers
                                     RegionInfo = regionInfo
                                 };
 
-                                if (info.TryGetValue("audios", out JToken? audiosList))
+                                if (info.TryGetValue("audios", out JToken? audiosList) && audiosList.HasValues)
                                 {
                                     foreach (JObject audio in audiosList.ToObject<JArray>())
                                     {
@@ -104,7 +123,7 @@ namespace Blog_App_Dev.Controllers
                                     }
                                 }
 
-                                if (info.TryGetValue("subtitles", out JToken? subtitlesList))
+                                if (info.TryGetValue("subtitles", out JToken? subtitlesList) && subtitlesList.HasValues)
                                 {
                                     foreach (JObject subtitle in subtitlesList.ToObject<JArray>())
                                     {
@@ -178,8 +197,16 @@ namespace Blog_App_Dev.Controllers
                     _context.Movies.Add(movie);
                     _context.SaveChanges();
                 }
+                var movies = _context.Movies
+                    .Where(m => m.Title.Contains(title))
+                    .Include(m => m.Regions)
+                    .ThenInclude(r => r.StreamingServices)
+                    .Include(m => m.Cast)
+                    .Include(m => m.Directors)
+                    .Include(m => m.Genres)
+                    .ToList();
 
-                return RedirectToAction("Index");
+                return View(movies);
             }
 
             return View("Error"); // return an error view if the API call was not successful
@@ -189,8 +216,37 @@ namespace Blog_App_Dev.Controllers
         public async Task<IActionResult> Index()
         {
               return _context.Movies != null ? 
-                          View(await _context.Movies.ToListAsync()) :
+                          View(await _context.Movies
+                            .Include(m => m.Regions)
+                            .ThenInclude(r => r.StreamingServices)
+                            .Include(m => m.Cast)
+                            .Include(m => m.Directors)
+                            .Include(m => m.Genres)
+                            .ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Movies'  is null.");
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.Movies == null)
+            {
+                return NotFound();
+            }
+
+            var movie = await _context.Movies
+                .Include(m => m.Regions)
+                .ThenInclude(r => r.StreamingServices)
+                .Include(m => m.Cast)
+                .Include(m => m.Directors)
+                .Include(m => m.Genres)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (movie == null)
+            {
+                return NotFound();
+            }
+
+            return View(movie);
+        } 
     }
 }

@@ -200,6 +200,32 @@ namespace Blog_App_Dev.Controllers
             var blogPosts = _context.BlogPosts.ToList();
             // Get all comments
             var comments = _context.CommentPosts.ToList();
+            
+            var actors = _context.Casts.ToList();
+            var directors = _context.Directors.ToList();
+            var audios = _context.Audios.ToList();
+            var genres = _context.Genres.ToList();
+            var streamingServices = _context.StreamingServices.ToList();
+            var subtitles = _context.Subtitles.ToList();
+            var regionInfos = _context.RegionInfo.ToList();
+            var movies = _context.Movies.ToList();
+
+            _context.Casts.RemoveRange(actors);
+            await _context.SaveChangesAsync();
+            _context.Directors.RemoveRange(directors);
+            await _context.SaveChangesAsync();
+            _context.Audios.RemoveRange(audios);
+            await _context.SaveChangesAsync();
+            _context.Subtitles.RemoveRange(subtitles);
+            await _context.SaveChangesAsync();
+            _context.StreamingServices.RemoveRange(streamingServices);
+            await _context.SaveChangesAsync();
+            _context.RegionInfo.RemoveRange(regionInfos);
+            await _context.SaveChangesAsync();
+            _context.Genres.RemoveRange(genres);
+            await _context.SaveChangesAsync();
+            _context.Movies.RemoveRange(movies);
+            await _context.SaveChangesAsync();
 
             // Delete all comments
             _context.CommentPosts.RemoveRange(comments);
