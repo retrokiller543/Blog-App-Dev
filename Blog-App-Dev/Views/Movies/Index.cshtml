@@ -1,0 +1,120 @@
+﻿@model IEnumerable<Blog_App_Dev.Models.Movie>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Type)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Overview)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReleaseYear)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.imdbId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.imdbRating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.imdbVoteCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.tmdbId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.tmdbRating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OriginalTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BackdropPath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Runtime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Trailer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrailerID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PosterPath)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tagline)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Overview)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseYear)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.imdbId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.imdbRating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.imdbVoteCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.tmdbId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.tmdbRating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OriginalTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BackdropPath)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Runtime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Trailer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrailerID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PosterPath)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tagline)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

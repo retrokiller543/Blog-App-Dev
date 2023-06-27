@@ -1,47 +1,80 @@
 ﻿@model Blog_App_Dev.Models.ApplicationUser
 
 @{
-    ViewData["Title"] = "User Profile";
+    ViewData["Title"] = Model.UserName;
 }
 
-<h2>@ViewData["Title"]</h2>
+<link rel="stylesheet" href="~/css/Profile/Details.css">
 
-<div>
-    <h3>User Information</h3>
-    <p>
-        <strong>User Name:</strong> @Model.UserName <br />
-        <strong>Email:</strong> @Model.Email <br />
-        <strong>Number of Posts:</strong> @ViewBag.PostCount <br />
-        <strong>Number of Comments:</strong> @ViewBag.CommentCount <br />
-    </p>
-</div>
+<section class="container card">
 
-<div>
-    <h3>Posts by @Model.UserName</h3>
-    <ul>
-        @foreach (var post in Model.Posts)
-        {
-            <li>
-                <h4>@post.Title</h4>
-                <p>@post.Content</p>
-                <p><strong>Date Posted:</strong> @post.DatePosted.ToShortDateString()</p>
-                <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })">View Post</a>
-            </li>
-        }
-    </ul>
-</div>
+    <h2 class="title">@ViewData["Title"]</h2>
 
-<div>
-    <h3>Comments by @Model.UserName</h3>
-    <ul>
-        @foreach (var comment in Model.Comments)
-        {
-            <li>
-                <h4>@comment.Title</h4>
-                <p>@comment.Content</p>
-                <p><strong>Date Posted:</strong> @comment.DatePosted.ToShortDateString()</p>
-                <a href="@Url.Action("Details", "BlogPosts", new { id = comment.PostID })">View Related Post</a>
-            </li>
-        }
-    </ul>
-</div>
+    <div class="user-info section">
+        <h3 class="subtitle">User Information</h3>
+        <p class="text">
+            <strong class="label">User Name:</strong> <span class="value">@Model.UserName</span><br />
+            <strong class="label">Email:</strong> <span class="value">@Model.Email</span><br />
+            <strong class="label">Joined:</strong> <span class="value">@Model.JoinedAt</span><br />
+            <strong class="label">Number of Posts:</strong> <span class="value">@ViewBag.PostCount</span><br />
+            <strong class="label">Number of Comments:</strong> <span class="value">@ViewBag.CommentCount</span><br />
+        </p>
+    </div>
+
+    @if (Model.Posts.Count != 0)
+    {
+        <div class="posts section">
+            <h3 class="subtitle">Posts by @Model.UserName</h3>
+            <ul class="post-list">
+                @foreach (var post in Model.Posts)
+                {
+                    <li class ="post-item item-card item-card-hover">
+                        <a class="post-link" href="@Url.Action("Details", "BlogPosts", new { id = post.ID })">
+                            <div >
+                                <h4 class="post-title">@post.Title</h4>
+                                <p class="post-content">@post.Content</p>
+                                <p class="post-date"><strong class="post-date-label">Date Posted:</strong> <span class="post-date-value">@post.DatePosted.ToShortDateString()</span></p>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    else
+    {
+        <div class="posts section">
+            <h3 class="subtitle">No Posts By @Model.UserName</h3>
+        </div>
+    }
+
+    @if (Model.Comments.Count != 0)
+    {
+        <div class="comments section">
+            <h3 class="subtitle">Comments by @Model.UserName</h3>
+            <ul class="comment-list">
+                @foreach (var comment in Model.Comments)
+                {
+                    <li class="comment-item item-card item-card-hover">
+                        <a class="comment-link" href="@Url.Action("Details", "BlogPosts", new { id = comment.PostID })">
+                            <div>
+                                <h4 class="comment-title">@comment.Title</h4>
+                                <p class="comment-content">@comment.Content</p>
+                                <p class="comment-date"><strong class="comment-date-label">Date Posted:</strong> <span class="comment-date-value">@comment.DatePosted.ToShortDateString()</span></p>
+                            </div>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    else
+    {
+        <div class="posts section">
+            <h3 class="subtitle">No Comments By @Model.UserName</h3>
+        </div>
+    }
+
+
+
+</section>
