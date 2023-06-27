@@ -34,7 +34,6 @@ namespace Blog_App_Dev.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -53,11 +52,9 @@ namespace Blog_App_Dev.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("Language")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Region")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("StreamingServiceID")
@@ -145,7 +142,6 @@ namespace Blog_App_Dev.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -163,11 +159,10 @@ namespace Blog_App_Dev.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
-                    b.Property<int>("MovieID")
+                    b.Property<int?>("MovieID")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -186,37 +181,36 @@ namespace Blog_App_Dev.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("BackdropPath")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalLanguage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("OriginalTitle")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Overview")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PosterPath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReleaseYear")
+                    b.Property<int?>("ReleaseYear")
                         .HasColumnType("int");
 
-                    b.Property<int>("Runtime")
+                    b.Property<int?>("Runtime")
                         .HasColumnType("int");
 
                     b.Property<string>("Tagline")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Trailer")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TrailerID")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
@@ -224,19 +218,18 @@ namespace Blog_App_Dev.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("imdbId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("imdbRating")
+                    b.Property<int?>("imdbRating")
                         .HasColumnType("int");
 
-                    b.Property<int>("imdbVoteCount")
+                    b.Property<int?>("imdbVoteCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("tmdbId")
+                    b.Property<int?>("tmdbId")
                         .HasColumnType("int");
 
-                    b.Property<int>("tmdbRating")
+                    b.Property<int?>("tmdbRating")
                         .HasColumnType("int");
 
                     b.HasKey("ID");
@@ -256,7 +249,6 @@ namespace Blog_App_Dev.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("RegionName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("RegionID");
@@ -275,30 +267,24 @@ namespace Blog_App_Dev.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("AddOn")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Link")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Quality")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RegionInfoID")
                         .HasColumnType("int");
 
                     b.Property<string>("Service")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("watchLink")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
@@ -316,7 +302,7 @@ namespace Blog_App_Dev.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
-                    b.Property<bool>("ClosedCaptions")
+                    b.Property<bool?>("ClosedCaptions")
                         .HasColumnType("bit");
 
                     b.Property<string>("Language")
@@ -604,18 +590,18 @@ namespace Blog_App_Dev.Data.Migrations
                 {
                     b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
                         .WithMany("Genres")
-                        .HasForeignKey("MovieID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieID");
 
                     b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.RegionInfo", b =>
                 {
-                    b.HasOne("Blog_App_Dev.Models.Movie", null)
+                    b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
                         .WithMany("Regions")
                         .HasForeignKey("MovieID");
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.StreamingService", b =>

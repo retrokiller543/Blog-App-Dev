@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog_App_Dev.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230623213826_migration2338")]
-    partial class migration2338
+    [Migration("20230627103053_Rebase")]
+    partial class Rebase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,54 @@ namespace Blog_App_Dev.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Actor", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<int?>("MovieID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MovieID");
+
+                    b.ToTable("Casts");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Audios", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StreamingServiceID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("StreamingServiceID");
+
+                    b.ToTable("Audios");
+                });
 
             modelBuilder.Entity("Blog_App_Dev.Models.BlogPost", b =>
                 {
@@ -85,6 +133,208 @@ namespace Blog_App_Dev.Data.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("CommentPosts");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Director", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<int?>("MovieID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MovieID");
+
+                    b.ToTable("Directors");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Genre", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<int>("MovieID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MovieID");
+
+                    b.ToTable("Genres");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Movie", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("BackdropPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Overview")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PosterPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReleaseYear")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Runtime")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tagline")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Trailer")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TrailerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("imdbId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("imdbRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("imdbVoteCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("tmdbId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("tmdbRating")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Movies");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.RegionInfo", b =>
+                {
+                    b.Property<int>("RegionID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RegionID"), 1L, 1);
+
+                    b.Property<int?>("MovieID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RegionID");
+
+                    b.HasIndex("MovieID");
+
+                    b.ToTable("RegionInfo");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.StreamingService", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("AddOn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Quality")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RegionInfoID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("watchLink")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("RegionInfoID");
+
+                    b.ToTable("StreamingServices");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Subtitles", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<bool>("ClosedCaptions")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Language")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StreamingServiceID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("StreamingServiceID");
+
+                    b.ToTable("Subtitles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -295,7 +545,28 @@ namespace Blog_App_Dev.Data.Migrations
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Actor", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
+                        .WithMany("Cast")
+                        .HasForeignKey("MovieID");
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Audios", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.StreamingService", "StreamingService")
+                        .WithMany("Audios")
+                        .HasForeignKey("StreamingServiceID");
+
+                    b.Navigation("StreamingService");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.BlogPost", b =>
@@ -320,6 +591,51 @@ namespace Blog_App_Dev.Data.Migrations
                     b.Navigation("Post");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Director", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
+                        .WithMany("Directors")
+                        .HasForeignKey("MovieID");
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Genre", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
+                        .WithMany("Genres")
+                        .HasForeignKey("MovieID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.RegionInfo", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.Movie", null)
+                        .WithMany("Regions")
+                        .HasForeignKey("MovieID");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.StreamingService", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.RegionInfo", "RegionInfo")
+                        .WithMany("StreamingServices")
+                        .HasForeignKey("RegionInfoID");
+
+                    b.Navigation("RegionInfo");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Subtitles", b =>
+                {
+                    b.HasOne("Blog_App_Dev.Models.StreamingService", "StreamingService")
+                        .WithMany("Subtitles")
+                        .HasForeignKey("StreamingServiceID");
+
+                    b.Navigation("StreamingService");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -376,6 +692,29 @@ namespace Blog_App_Dev.Data.Migrations
             modelBuilder.Entity("Blog_App_Dev.Models.BlogPost", b =>
                 {
                     b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.Movie", b =>
+                {
+                    b.Navigation("Cast");
+
+                    b.Navigation("Directors");
+
+                    b.Navigation("Genres");
+
+                    b.Navigation("Regions");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.RegionInfo", b =>
+                {
+                    b.Navigation("StreamingServices");
+                });
+
+            modelBuilder.Entity("Blog_App_Dev.Models.StreamingService", b =>
+                {
+                    b.Navigation("Audios");
+
+                    b.Navigation("Subtitles");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.ApplicationUser", b =>

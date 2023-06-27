@@ -6,9 +6,9 @@ namespace Blog_App_Dev.Models
     {
         [Key]
         public int ID { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public int MovieID { get; set; }
-        public virtual Movie Movie { get; set; }
+        public int? MovieID { get; set; }
+        public virtual Movie? Movie { get; set; }
     }
 }

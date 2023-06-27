@@ -5,15 +5,51 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Blog_App_Dev.Data.Migrations
 {
-    public partial class AddedMovies : Migration
+    public partial class Rebase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "AspNetUserTokens",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserTokens",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
             migrationBuilder.AddColumn<DateTime>(
                 name: "JoinedAt",
                 table: "AspNetUsers",
                 type: "datetime2",
                 nullable: true);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "ProviderKey",
+                table: "AspNetUserLogins",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserLogins",
+                type: "nvarchar(450)",
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(128)",
+                oldMaxLength: 128);
 
             migrationBuilder.CreateTable(
                 name: "Movies",
@@ -43,7 +79,7 @@ namespace Blog_App_Dev.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Director",
+                name: "Casts",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
@@ -53,9 +89,28 @@ namespace Blog_App_Dev.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Director", x => x.ID);
+                    table.PrimaryKey("PK_Casts", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Director_Movies_MovieID",
+                        name: "FK_Casts_Movies_MovieID",
+                        column: x => x.MovieID,
+                        principalTable: "Movies",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Directors",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MovieID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Directors", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Directors_Movies_MovieID",
                         column: x => x.MovieID,
                         principalTable: "Movies",
                         principalColumn: "ID");
@@ -79,25 +134,6 @@ namespace Blog_App_Dev.Data.Migrations
                         principalTable: "Movies",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Persons",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MovieID = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Persons", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Persons_Movies_MovieID",
-                        column: x => x.MovieID,
-                        principalTable: "Movies",
-                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -190,18 +226,18 @@ namespace Blog_App_Dev.Data.Migrations
                 column: "StreamingServiceID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Director_MovieID",
-                table: "Director",
+                name: "IX_Casts_MovieID",
+                table: "Casts",
+                column: "MovieID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Directors_MovieID",
+                table: "Directors",
                 column: "MovieID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Genres_MovieID",
                 table: "Genres",
-                column: "MovieID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Persons_MovieID",
-                table: "Persons",
                 column: "MovieID");
 
             migrationBuilder.CreateIndex(
@@ -226,13 +262,13 @@ namespace Blog_App_Dev.Data.Migrations
                 name: "Audios");
 
             migrationBuilder.DropTable(
-                name: "Director");
+                name: "Casts");
+
+            migrationBuilder.DropTable(
+                name: "Directors");
 
             migrationBuilder.DropTable(
                 name: "Genres");
-
-            migrationBuilder.DropTable(
-                name: "Persons");
 
             migrationBuilder.DropTable(
                 name: "Subtitles");
@@ -249,6 +285,42 @@ namespace Blog_App_Dev.Data.Migrations
             migrationBuilder.DropColumn(
                 name: "JoinedAt",
                 table: "AspNetUsers");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "Name",
+                table: "AspNetUserTokens",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserTokens",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "ProviderKey",
+                table: "AspNetUserLogins",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
+
+            migrationBuilder.AlterColumn<string>(
+                name: "LoginProvider",
+                table: "AspNetUserLogins",
+                type: "nvarchar(128)",
+                maxLength: 128,
+                nullable: false,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(450)");
         }
     }
 }

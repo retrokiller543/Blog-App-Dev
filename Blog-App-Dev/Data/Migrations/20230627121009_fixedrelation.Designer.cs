@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog_App_Dev.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230627101628_directorsAdded")]
-    partial class directorsAdded
+    [Migration("20230627121009_fixedrelation")]
+    partial class fixedrelation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -188,6 +188,10 @@ namespace Blog_App_Dev.Data.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("BackdropPath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalLanguage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -615,9 +619,11 @@ namespace Blog_App_Dev.Data.Migrations
 
             modelBuilder.Entity("Blog_App_Dev.Models.RegionInfo", b =>
                 {
-                    b.HasOne("Blog_App_Dev.Models.Movie", null)
+                    b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
                         .WithMany("Regions")
                         .HasForeignKey("MovieID");
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.StreamingService", b =>

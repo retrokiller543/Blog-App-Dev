@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blog_App_Dev.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230627101052_AddedMovies")]
-    partial class AddedMovies
+    [Migration("20230627123008_AddedTitle")]
+    partial class AddedTitle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,7 +43,7 @@ namespace Blog_App_Dev.Data.Migrations
 
                     b.HasIndex("MovieID");
 
-                    b.ToTable("Persons");
+                    b.ToTable("Casts");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.Audios", b =>
@@ -154,7 +154,7 @@ namespace Blog_App_Dev.Data.Migrations
 
                     b.HasIndex("MovieID");
 
-                    b.ToTable("Director");
+                    b.ToTable("Directors");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.Genre", b =>
@@ -191,6 +191,10 @@ namespace Blog_App_Dev.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("OriginalLanguage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("OriginalTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -210,6 +214,10 @@ namespace Blog_App_Dev.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Tagline")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -615,9 +623,11 @@ namespace Blog_App_Dev.Data.Migrations
 
             modelBuilder.Entity("Blog_App_Dev.Models.RegionInfo", b =>
                 {
-                    b.HasOne("Blog_App_Dev.Models.Movie", null)
+                    b.HasOne("Blog_App_Dev.Models.Movie", "Movie")
                         .WithMany("Regions")
                         .HasForeignKey("MovieID");
+
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("Blog_App_Dev.Models.StreamingService", b =>
