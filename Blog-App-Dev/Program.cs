@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Blog_App_Dev.Data;
 using Blog_App_Dev.Models;
 using Blog_App_Dev.Services;
@@ -13,7 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 // var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // Dev connection string for local DB
-var connectionString = builder.Configuration.GetConnectionString("_DevConnectionString");
+// var connectionString = builder.Configuration.GetConnectionString("_DevConnectionString");
+var azureOptions = new DefaultAzureCredentialOptions
+{
+    ManagedIdentityClientId = builder.Configuration["AzureKeyVault:AzureADManagedIdentityClientId"],
+    TenantId = builder.Configuration["AzureKeyVault:TennantId"]
+}.AllowMultiTenantAuthentication();
+var credential = new DefaultAzureCredential(azureOptions);
+
+builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AzureKeyVault:VaultURL"]), credential);
+var connectionString = builder.Configuration["DevConnectionString"];
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
