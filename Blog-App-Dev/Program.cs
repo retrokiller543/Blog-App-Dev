@@ -5,6 +5,7 @@ using Blog_App_Dev.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,10 +38,9 @@ catch (Exception ex)
     Console.WriteLine($"Failed to get connection string: {ex.Message}");
 }
 
-
-
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 
 /*
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)

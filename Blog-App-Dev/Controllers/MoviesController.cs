@@ -23,13 +23,20 @@ namespace Blog_App_Dev.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public MoviesController(ApplicationDbContext context)
+        private readonly IConfiguration _configuration;
+
+        public MoviesController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
+
 
         public IActionResult SearchMovie(string title)
         {
+            string apiKey = _configuration["RapidAPIKey"];
+
+
             var moviesInDb = _context.Movies
                 .Where(predicate: m => m.Title.Contains(title))
                     .Include(m => m.Regions)
@@ -47,7 +54,7 @@ namespace Blog_App_Dev.Controllers
 
             var client = new RestClient("https://streaming-availability.p.rapidapi.com/v2/search/title?title=" + title + "&country=us&show_type=movie&output_language=en");
             var request = new RestRequest();
-            request.AddHeader("X-RapidAPI-Key", "346e77a6f3msh163186a7d97775fp1d3a0djsn807dde9d0dce");
+            request.AddHeader("X-RapidAPI-Key", apiKey);
             request.AddHeader("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com");
             RestResponse response = client.Execute(request);
 
