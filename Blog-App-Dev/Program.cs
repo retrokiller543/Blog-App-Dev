@@ -19,7 +19,7 @@ var azureOptions = new DefaultAzureCredentialOptions
 {
     ManagedIdentityClientId = builder.Configuration["AzureKeyVault:AzureADManagedIdentityClientId"],
     TenantId = builder.Configuration["AzureKeyVault:TennantId"]
-}.AllowMultiTenantAuthentication();
+};
 var credential = new DefaultAzureCredential(azureOptions);
 
 builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AzureKeyVault:VaultURL"]), credential);
