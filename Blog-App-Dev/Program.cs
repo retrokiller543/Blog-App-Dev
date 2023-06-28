@@ -18,15 +18,27 @@ var builder = WebApplication.CreateBuilder(args);
 var azureOptions = new DefaultAzureCredentialOptions
 {
     ManagedIdentityClientId = builder.Configuration["AzureKeyVault:AzureADManagedIdentityClientId"],
-    TenantId = builder.Configuration["AzureKeyVault:TennantId"]
+    TenantId = builder.Configuration["AzureKeyVault:TennantId"],
+    AdditionallyAllowedTenants = { "*" } // This allows any tenant
 };
 var credential = new DefaultAzureCredential(azureOptions);
 
 builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AzureKeyVault:VaultURL"]), credential);
-var connectionString = builder.Configuration["DevConnectionString"];
+try
+{
+    // Remove "Dev" from connection string name to get production DB
+    var connectionString = builder.Configuration["DevConnectionString"];
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Failed to get connection string: {ex.Message}");
+}
+
+
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
