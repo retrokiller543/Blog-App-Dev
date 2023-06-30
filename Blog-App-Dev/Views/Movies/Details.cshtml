@@ -1,22 +1,45 @@
 ﻿@model Blog_App_Dev.Models.Movie
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Title + " - Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
-    <h4>Movie</h4>
-    <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        @if (Model.OriginalTitle != Model.Title)
+        {
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.OriginalTitle)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.OriginalTitle)
+            </dd>
+        }
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Type)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Type)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Genres)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var genre in Model.Genres)
+            {
+                <strong>@genre.Name</strong>
+            }
+        </dd>
+        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Overview)
         </dt>
@@ -30,10 +53,10 @@
             @Html.DisplayFor(model => model.ReleaseYear)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.imdbId)
+            IMDb Link: 
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.imdbId)
+            <a href="https://www.imdb.com/title/@Model.imdbId">https://www.imdb.com/title/@Model.imdbId</a>
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.imdbRating)
@@ -48,10 +71,10 @@
             @Html.DisplayFor(model => model.imdbVoteCount)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.tmdbId)
+            The Movie Database Link:
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.tmdbId)
+            <a href="https://www.themoviedb.org/movie/@Model.tmdbId">https://www.themoviedb.org/movie/@Model.tmdbId</a>
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.tmdbRating)
@@ -60,16 +83,10 @@
             @Html.DisplayFor(model => model.tmdbRating)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OriginalTitle)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OriginalTitle)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.BackdropPath)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.BackdropPath)
+            <img src="https://image.tmdb.org/t/p/original/@Model.BackdropPath" alt="Image from the @Model.Type called @Model.Title that was released @Model.ReleaseYear" />
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Runtime)
@@ -80,26 +97,67 @@
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Trailer)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Trailer)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrailerID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrailerID)
-        </dd>
+        @if (Model.Trailer == null)
+        {
+            <dd class="col-sm-10">
+                <a href="https://www.youtube.com/watch?v=@Model.TrailerID">Watch</a>
+            </dd>
+        } else
+        {
+            <dd class="col-sm-10">
+                <a href="@Model.Trailer">Watch</a>
+            </dd>
+        }
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.PosterPath)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PosterPath)
+            <img src="https://image.tmdb.org/t/p/original/@Model.PosterPath" alt="Poster image from the @Model.Type called @Model.Title that was released @Model.ReleaseYear" />
+
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Tagline)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Tagline)
+        </dd>
+
+        
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Directors)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var director in Model.Directors)
+            {
+                <div>
+                    <dl class="row">
+                        <dt class="col-sm-2">
+                            Director: 
+                        </dt>
+                        <dd class="col-sm-10">
+                            @director.Name
+                        </dd>
+                    </dl>
+                </div>
+            }
+
+        <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Cast)
+        </dt>
+        <dd class="col-sm-10">
+                @foreach (var actor in Model.Cast)
+                {
+                <div>
+                    <dl class="row">
+                        <dt class="col-sm-2">
+                            Actor:
+                        </dt>
+                        <dd class="col-sm-10">
+                            @actor.Name
+                        </dd>
+                    </dl>
+                </div>
+                }
         </dd>
     </dl>
 </div>

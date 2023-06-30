@@ -52,7 +52,7 @@ namespace Blog_App_Dev.Controllers
                 return View(moviesInDb);
             }
 
-            var client = new RestClient("https://streaming-availability.p.rapidapi.com/v2/search/title?title=" + title + "&country=us&show_type=movie&output_language=en");
+            var client = new RestClient("https://streaming-availability.p.rapidapi.com/v2/search/title?title=" + title + "&country=se&show_type=movie&output_language=en");
             var request = new RestRequest();
             request.AddHeader("X-RapidAPI-Key", apiKey);
             request.AddHeader("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com");

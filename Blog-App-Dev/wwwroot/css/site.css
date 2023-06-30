@@ -147,3 +147,7 @@ footer {
     margin-bottom: 5px;
     color: #777;
 }
+
+img {
+    width: 32rem;
+}
