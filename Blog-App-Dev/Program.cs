@@ -28,7 +28,7 @@ builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AzureKeyVa
 try
 {
     // Remove "Dev" from connection string name to get production DB
-    var connectionString = builder.Configuration["DevConnectionString"];
+    var connectionString = builder.Configuration["ConnectionString"];
 
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
