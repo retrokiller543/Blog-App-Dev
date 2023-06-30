@@ -81,7 +81,7 @@ namespace Blog_App_Dev.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required]
-            [StringLength(256, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(256)]
             [Display(Name = "Username")]
             public string Username { get; set; }
             /// <summary>
@@ -126,10 +126,13 @@ namespace Blog_App_Dev.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    await _userManager.AddToRoleAsync(user, "User");
+                    
                     if (Input.Email == "emil.schutt@gmail.com")
                     {
                         await _userManager.AddToRoleAsync(user, "Admin");
+                    } else
+                    {
+                        await _userManager.AddToRoleAsync(user, "User");
                     }
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

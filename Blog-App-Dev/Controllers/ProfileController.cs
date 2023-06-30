@@ -2,6 +2,7 @@
 using Blog_App_Dev.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blog_App_Dev.Controllers
 {
@@ -14,6 +15,13 @@ namespace Blog_App_Dev.Controllers
         {
             _userManager = userManager;
             _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var users = await _userManager.Users.ToListAsync();
+
+            return View(users);
         }
 
         public async Task<IActionResult> Details(string id)

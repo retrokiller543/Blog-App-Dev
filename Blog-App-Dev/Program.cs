@@ -1,22 +1,63 @@
+using Azure.Identity;
 using Blog_App_Dev.Data;
 using Blog_App_Dev.Models;
 using Blog_App_Dev.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+
+// Defualt connection string for production DB
+// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Dev connection string for local DB
+// var connectionString = builder.Configuration.GetConnectionString("_DevConnectionString");
+var azureOptions = new DefaultAzureCredentialOptions
+{
+    ManagedIdentityClientId = builder.Configuration["AzureKeyVault:AzureADManagedIdentityClientId"],
+    TenantId = builder.Configuration["AzureKeyVault:TennantId"],
+    AdditionallyAllowedTenants = { "*" } // This allows any tenant
+};
+var credential = new DefaultAzureCredential(azureOptions);
+
+builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AzureKeyVault:VaultURL"]), credential);
+try
+{
+    // Remove "Dev" from connection string name to get production DB
+    var connectionString = builder.Configuration["DevConnectionString"];
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Failed to get connection string: {ex.Message}");
+}
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
 /*
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 */
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    
+    options.SignIn.RequireConfirmedEmail = true;
+    options.SignIn.RequireConfirmedAccount = true;
+    
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireDigit = true;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 

@@ -1,0 +1,13 @@
+﻿@model IEnumerable<Blog_App_Dev.Models.ApplicationUser>
+
+<div class="card">
+    <h2>Users</h2>
+    @foreach (var user in Model)
+    {
+        <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="item-card-link">
+            <div class="item-card item-card-hover user">
+                <h3>@user.UserName</h3>
+            </div>
+        </a>
+    }
+</div>

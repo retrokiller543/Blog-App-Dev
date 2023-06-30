@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Blog_App_Dev.Models.Movie>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<form asp-action="SearchMovie" method="get">
+    <p>
+        Title: <input type="text" name="title" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+@if (Model != null && Model.Any())
+{
+    <h2>Search Results</h2>
+
+    <section>
+        @foreach (var movie in Model)
+        {
+            <a href="@Url.Action("Details", "Movies", new { id = movie.ID })" class="item-card-link">
+                <section class="item-card item-card-hover">
+                    <h2 class="movie-title">@movie.Title</h2>
+                    <p class="movie-overview">@movie.Overview</p>
+
+                    @if (movie.Regions != null && movie.Regions.Any())
+                    {
+                        @foreach (var region in movie.Regions)
+                        {
+                            <h4 class="region-name">@region.RegionName</h4>
+
+                            @if (region.StreamingServices != null && region.StreamingServices.Any())
+                            {
+                                @foreach (var streamingService in region.StreamingServices)
+                                {
+                                    <div class="item-card">
+                                        <p class="streaming-service">@streamingService.Service</p>
+                                        <p class="streaming-service">@streamingService.Type</p>
+                                        <p class="streaming-service">@streamingService.Link</p>
+                                    </div>
+                                }
+                            }
+                        }
+                    }
+                </section>
+            </a>
+        }
+    </section>
+}
+else
+{
+    <p>No movies found.</p>
+}
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>

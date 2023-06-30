@@ -8,23 +8,25 @@ namespace Blog_App_Dev.Services
     public class EmailSender : IEmailSender
     {
         private readonly ILogger _logger;
+        private readonly IConfiguration _configuration;
 
-        public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor,
-                           ILogger<EmailSender> logger)
+        public EmailSender(ILogger<EmailSender> logger,
+                           IConfiguration configuration)
         {
-            Options = optionsAccessor.Value;
             _logger = logger;
+            _configuration = configuration;
         }
 
-        public AuthMessageSenderOptions Options { get; } //Set with Secret Manager.
+        
 
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
-            if (string.IsNullOrEmpty(Options.SendGridKey))
+            var sendGridKey = _configuration["SendGridKey"];
+            if (string.IsNullOrEmpty(sendGridKey))
             {
                 throw new Exception("Null SendGridKey");
             }
-            await Execute(Options.SendGridKey, subject, message, toEmail);
+            await Execute(sendGridKey, subject, message, toEmail);
         }
 
         public async Task Execute(string apiKey, string subject, string message, string toEmail)
@@ -32,7 +34,7 @@ namespace Blog_App_Dev.Services
             var client = new SendGridClient(apiKey);
             var msg = new SendGridMessage()
             {
-                From = new EmailAddress("emil.schutt@gmail.com", "Password Recovery"),
+                From = new EmailAddress(_configuration["SenderEmail"], subject),
                 Subject = subject,
                 PlainTextContent = message,
                 HtmlContent = message
