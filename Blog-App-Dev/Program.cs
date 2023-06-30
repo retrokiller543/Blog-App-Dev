@@ -20,7 +20,7 @@ var azureOptions = new DefaultAzureCredentialOptions
 {
     ManagedIdentityClientId = builder.Configuration["AzureKeyVault:AzureADManagedIdentityClientId"],
     TenantId = builder.Configuration["AzureKeyVault:TennantId"],
-    AdditionallyAllowedTenants = { "*" } // This allows any tenant
+    AdditionallyAllowedTenants = { "*" }
 };
 var credential = new DefaultAzureCredential(azureOptions);
 
