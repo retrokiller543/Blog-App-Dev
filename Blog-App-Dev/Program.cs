@@ -22,7 +22,7 @@ var azureOptions = new DefaultAzureCredentialOptions
     TenantId = builder.Configuration["AzureKeyVault:TennantId"],
     AdditionallyAllowedTenants = { "*" }
 };
-var credential = new DefaultAzureCredential(azureOptions);
+var credential = new DefaultAzureCredential();
 
 builder.Configuration.AddAzureKeyVault(new Uri(builder.Configuration["AzureKeyVault:VaultURL"]), credential);
 try
