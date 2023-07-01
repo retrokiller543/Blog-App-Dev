@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Unsplash.Models.Photo.Full>
+
+@{
+    ViewData["Title"] = "Image Gallery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    int prevPage = ViewBag.Page - 1;
+    int nextPage = ViewBag.Page + 1;
+    
+}
+
+<section>
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="SearchImage" method="get">
+        <p>
+            Title: <input type="text" name="query" autofocus/>
+            <input type="submit" value="Search" />
+        </p>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th>
+                    Image
+                </th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var photo in Model)
+            {
+                <tr>
+
+                    <td>
+                        <a href="@photo.Links.Html" target="_blank" rel="noopener noreferrer">
+                            <img src="@Html.DisplayFor(modelItem => photo.Urls.Thumb)" alt="@photo.AltDescription" title="@photo.Description" />
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <form asp-action="Index" method="post">
+        @if (prevPage >= 1)
+        {
+            <label for="page">&lt</label>
+            <input type="submit" name="page" value="@prevPage" />
+        }
+        <input type="submit" name="page" value="@nextPage" />
+        <label for="page">></label>
+    </form>
+</section>

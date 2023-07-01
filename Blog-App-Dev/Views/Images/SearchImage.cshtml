@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Unsplash.Models.Photo.Basic>
+
+@{
+    ViewData["Title"] = "Image Gallery";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section>
+    <h2>@ViewData["Title"]</h2>
+
+    <form asp-action="SearchImage" method="get">
+        <p>
+            Title: <input type="text" name="query" value="@ViewBag.Query" autofocus/>
+            <input type="submit" value="Search" />
+        </p>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+
+                <th>
+                    Image
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var photo in Model)
+            {
+                <tr>
+
+                    <td>
+                        <a href="@photo.Links.Html" target="_blank" rel="noopener noreferrer">
+                            <img src="@Html.DisplayFor(modelItem => photo.Urls.Thumb)" alt="@photo.AltDescription" title="@photo.Description" />
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>

@@ -77,6 +77,7 @@ namespace Blog_App_Dev.Controllers
             ViewBag.PostID = blogPost.ID;
 
             return View(blogPost);
+
         }
         [Authorize]
         // GET: BlogPosts/Edit/5
@@ -92,7 +93,14 @@ namespace Blog_App_Dev.Controllers
             {
                 return NotFound();
             }
-            return View(blogPost);
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
+            if (blogPost.UserID == currentUserID)
+            {
+                return View(blogPost);
+            }
+            return RedirectToAction(nameof(Index));
+            
         }
 
         // POST: BlogPosts/Edit/5
@@ -103,7 +111,9 @@ namespace Blog_App_Dev.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,DatePosted")] BlogPost blogPost)
         {
-            if (id != blogPost.ID)
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
+            if (id != blogPost.ID && currentUserID != blogPost.UserID)
             {
                 return NotFound();
             }
@@ -145,8 +155,13 @@ namespace Blog_App_Dev.Controllers
             {
                 return NotFound();
             }
-
-            return View(blogPost);
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
+            if (currentUserID ==  blogPost.UserID)
+            {
+                return View(blogPost);
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: BlogPosts/Delete/5
@@ -159,7 +174,9 @@ namespace Blog_App_Dev.Controllers
                 return Problem("Entity set 'ApplicationDbContext.BlogPosts'  is null.");
             }
             var blogPost = await _context.BlogPosts.FindAsync(id);
-            if (blogPost != null)
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
+            if (blogPost != null && currentUserID == blogPost.UserID)
             {
                 _context.BlogPosts.Remove(blogPost);
             }
