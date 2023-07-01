@@ -9,7 +9,7 @@ This is a blog application built using ASP.NET 6.
 - [Contributing](#contributing)
 
 ## Description
-The application is a simple blog platform where users can write and share their blogs. It provides features such as creating, editing, and deleting blogs, as well as commenting on blogs. 
+The application is a simple blog platform where users can write and share their blogs. It provides features such as creating, editing, and deleting blogs, as well as commenting on blogs. The app also has a way of search for movies using the [Streaming Availability API](https://rapidapi.com/movie-of-the-night-movie-of-the-night-default/api/streaming-availability/) and images using the [Unsplash API](https://unsplash.com/documentation)
 
 ## Languages
 The languages used in the project are:
@@ -21,7 +21,7 @@ The languages used in the project are:
 The project is under the MIT license. For more details, please refer to the [LICENSE](https://github.com/Retrokiller543/Blog-App-Dev/blob/main/LICENSE.txt) file in the project repository.
 
 ## Contributing
-We welcome contributions from everyone. If you're interested in contributing, feel free to fork the repository and make your changes. Once you've made your changes, you can create a pull request. 
+We welcome contributions from everyone. If you're interested in contributing, feel free to fork the repository and make your changes, just make sure to push them to a new branch so that the production branch (master) doesn't break. Once you've made your changes, you can create a pull request. 
 
 ## Versioning
 We use Git for versioning. For the versions available, see the [commits on this repository](https://github.com/Retrokiller543/Blog-App-Dev/commits).
