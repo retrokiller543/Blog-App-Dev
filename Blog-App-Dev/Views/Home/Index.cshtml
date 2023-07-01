@@ -13,7 +13,7 @@
         <h2>Latest Posts</h2>
         @foreach (var post in Model.LatestPosts)
         {
-            <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })" class="item-card-link">
+            <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })" class="item-card-link" id="post">
                 <div class="item-card item-card-hover">
                     <h3>@post.Title</h3>
                     <p>@post.Content</p>
@@ -25,10 +25,11 @@
         <h2>Top Users</h2>
         @foreach (var user in Model.TopUsers)
         {
-            <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="item-card-link">
+            <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="item-card-link" id="user">
                 <div class="item-card item-card-hover user">
                     <h3>@user.UserName</h3>
-                    <p>Posts: @Model.LatestPosts.Count(p => p.UserID == user.Id)</p>
+                    <p>Posts: @user?.Posts?.Count</p>
+                    <p>Comments: @user?.Comments?.Count</p>
                 </div>
             </a>
         }
