@@ -36,7 +36,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="BlogPosts" asp-action="Index">View Blog Posts</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="BlogPosts" asp-action="Create">Create Blog Post</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="BlogPosts" asp-action="Create" id="create-post">Create Blog Post</a>
                         </li>
                         @if (SignInManager.IsSignedIn(User) &&
                         (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Admin")))
