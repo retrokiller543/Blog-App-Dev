@@ -1,6 +1,6 @@
 # Blog-App-Dev
 
-This is a blog application built using ASP.NET 6.
+This is a blog application with some fun little extra features i added to learn more about ASP.NET MVC.
 
 ## Table of Contents
 - [Description](#description)
@@ -21,7 +21,7 @@ The languages used in the project are:
 The project is under the MIT license. For more details, please refer to the [LICENSE](https://github.com/Retrokiller543/Blog-App-Dev/blob/main/LICENSE.txt) file in the project repository.
 
 ## Contributing
-We welcome contributions from everyone. If you're interested in contributing, feel free to fork the repository and make your changes, just make sure to push them to a new branch so that the production branch (master) doesn't break. Once you've made your changes, you can create a pull request. 
+We welcome contributions from everyone. If you're interested in contributing, feel free to fork the repository and make your changes. Once you've made your changes, you can create a pull request. Please refer to the [guidelines](https://github.com/Retrokiller543/Blog-App-Dev/blob/master/docs/CONTRIBUTING.md) for more information
 
 ## Versioning
 We use Git for versioning. For the versions available, see the [commits on this repository](https://github.com/Retrokiller543/Blog-App-Dev/commits).
