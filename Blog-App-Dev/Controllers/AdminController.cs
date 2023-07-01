@@ -86,10 +86,14 @@ namespace Blog_App_Dev.Controllers
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
+            var posts = await _context.BlogPosts.Include(p => p.User).ToListAsync();
+            var comments = await _context.CommentPosts.Include(p => p.User).ToListAsync();
             if (user == null)
             {
                 return NotFound();
             }
+            _context.CommentPosts.RemoveRange(comments);
+            _context.BlogPosts.RemoveRange(posts);
 
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)
@@ -110,13 +114,14 @@ namespace Blog_App_Dev.Controllers
 
         public async Task<IActionResult> ManagePosts()
         {
-            var posts = await _context.BlogPosts.Include(p => p.User).ToListAsync();
+            var posts = await _context.BlogPosts.Include(p => p.User).Include(c => c.Comments).ToListAsync();
             return View(posts);
         }
 
         public async Task<IActionResult> EditPost(int id)
         {
             var post = await _context.BlogPosts.FindAsync(id);
+            
             if (post == null)
             {
                 return NotFound();
