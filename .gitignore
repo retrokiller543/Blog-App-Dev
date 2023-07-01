@@ -363,5 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 #env file for testing
+.env
 */.env
 testing-scripts\.env
