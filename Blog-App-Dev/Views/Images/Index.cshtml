@@ -5,7 +5,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     int prevPage = ViewBag.Page - 1;
     int nextPage = ViewBag.Page + 1;
-    
 }
 
 <section>
@@ -13,41 +12,37 @@
 
     <form asp-action="SearchImage" method="get">
         <p>
-            Title: <input type="text" name="query" autofocus/>
+            Title: <input type="text" name="query" autofocus />
             <input type="submit" value="Search" />
         </p>
     </form>
 
-    <table class="table">
-        <thead>
-            <tr>
-                
-                <th>
-                    Image
-                </th>
-                
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container">
+        <div class="row">
             @foreach (var photo in Model)
             {
-                <tr>
-
-                    <td>
-                        <a href="@photo.Links.Html" target="_blank" rel="noopener noreferrer">
-                            <img src="@Html.DisplayFor(modelItem => photo.Urls.Thumb)" alt="@photo.AltDescription" title="@photo.Description" />
-                        </a>
-                    </td>
-                </tr>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <a href="@photo.Links.Html" target="_blank" rel="noopener noreferrer">
+                        <img class="img-fluid" src="@Html.DisplayFor(modelItem => photo.Urls.Thumb)" alt="@photo.AltDescription" title="@photo.Description" />
+                    </a>
+                    <span>
+                        @photo.User.Name
+                    </span>
+                    <span>
+                        @photo.CreatedAt.Year
+                    </span>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    </div>
+
     <form asp-action="Index" method="post">
         @if (prevPage >= 1)
         {
             <label for="page">&lt</label>
             <input type="submit" name="page" value="@prevPage" />
         }
+         ------ 
         <input type="submit" name="page" value="@nextPage" />
         <label for="page">></label>
     </form>
