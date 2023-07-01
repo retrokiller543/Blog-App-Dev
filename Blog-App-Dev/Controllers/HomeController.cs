@@ -2,6 +2,7 @@
 using Blog_App_Dev.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Unsplash.Models;
 
 namespace Blog_App_Dev.Controllers
 {
@@ -17,12 +18,12 @@ namespace Blog_App_Dev.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             var latestPosts = _context.BlogPosts
-                                  .OrderByDescending(p => p.DatePosted)
-                                  .Take(4)
-                                  .ToList();
+                                      .OrderByDescending(p => p.DatePosted)
+                                      .Take(4)
+                                      .ToList();
 
             var topUsers = _context.BlogPosts
                                    .GroupBy(p => p.UserID)
@@ -36,9 +37,25 @@ namespace Blog_App_Dev.Controllers
                                    .Select(u => u.UserId)
                                    .ToList();
 
-            var topUsersWithDetails = _context.Users
-                                              .Where(u => topUsers.Contains(u.Id))
-                                              .ToList();
+            var topUsersWithDetails = _context.Users.OfType<ApplicationUser>() // This line is changed
+                                                  .Where(u => topUsers.Contains(u.Id))
+                                                  .ToList();
+
+            foreach (var user in topUsersWithDetails) // This line is changed
+            {
+                await _context.Entry(user)
+                    .Collection(u => u.Posts).LoadAsync();
+                await _context.Entry(user)
+                    .Collection(u => u.Comments).LoadAsync();
+
+                // Count the number of blog posts and comments.
+                var postCount = user?.Posts?.Count;
+                var commentCount = user?.Comments?.Count;
+
+                // Pass these to the view.
+                ViewBag.PostCount = postCount;
+                ViewBag.CommentCount = commentCount;
+            }
 
             var model = new HomePageViewModel
             {
@@ -48,6 +65,8 @@ namespace Blog_App_Dev.Controllers
 
             return View(model);
         }
+
+
 
         public IActionResult Privacy()
         {

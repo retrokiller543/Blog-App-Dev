@@ -44,7 +44,7 @@
     </div>
 }
 <a asp-action="Index">Back to List</a>
-<a href="@Url.Action("Create", "Comments", new { postId = ViewBag.PostID })">Add Comment</a>
+<a href="@Url.Action("Create", "Comments", new { postId = ViewBag.PostID })" id="add-comment">Add Comment</a>
 
 <h3>Comments</h3>
 @if (Model?.Comments != null && Model.Comments.Any())
