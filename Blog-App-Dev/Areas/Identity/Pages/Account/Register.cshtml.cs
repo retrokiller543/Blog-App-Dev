@@ -126,11 +126,12 @@ namespace Blog_App_Dev.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    
+
                     if (Input.Email == "emil.schutt@gmail.com")
                     {
                         await _userManager.AddToRoleAsync(user, "Admin");
-                    } else
+                    }
+                    else
                     {
                         await _userManager.AddToRoleAsync(user, "User");
                     }
