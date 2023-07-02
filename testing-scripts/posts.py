@@ -16,8 +16,8 @@ password = os.getenv("PASSWORD")
 
 client = RandomTextClient()
 
-baseUrl = "https://localhost:7272"
-baseUrlProd = "https://tosic-blog.azurewebsites.net"
+# baseUrl = "https://localhost:7272"
+baseUrl = "https://tosic-blog.azurewebsites.net"
 post_ids = Queue()
 
 
@@ -90,7 +90,7 @@ def worker(thread_id, postIds):
     # Creating blog posts
     for i in range(6):
         create_blog_post(driver, i)
-    driver.get(baseUrl)
+    driver.get(baseUrl + "/BlogPosts")
     time.sleep(1)
     # Create comments for each postId
     for postId in postIds:
