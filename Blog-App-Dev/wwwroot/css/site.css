@@ -151,3 +151,33 @@ footer {
 img {
     width: 32rem;
 }
+ul.pagination {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+}
+
+    ul.pagination li {
+        margin: 0 5px;
+    }
+
+        ul.pagination li a {
+            color: #333;
+            padding: 5px 10px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        ul.pagination li.active a {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        ul.pagination li a:hover {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }

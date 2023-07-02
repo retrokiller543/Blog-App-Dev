@@ -46,3 +46,23 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+
+.icon-link {
+    position: relative;
+}
+
+.icon-description {
+    position: absolute;
+    bottom: -20px; /* Adjust as needed */
+    left: 0;
+    right: 0;
+    text-align: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.icon-link:hover .icon-description {
+    visibility: visible;
+    opacity: 1;
+}

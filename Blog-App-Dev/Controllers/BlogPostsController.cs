@@ -10,6 +10,7 @@ using Blog_App_Dev.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection.Metadata;
+using X.PagedList;
 
 namespace Blog_App_Dev.Controllers
 {
@@ -27,12 +28,61 @@ namespace Blog_App_Dev.Controllers
         // GET: Blogs
         public async Task<IActionResult> Index()
         {
-            var blogPosts = await _context.BlogPosts
-                        .Include(b => b.User)
-                        .ToListAsync();
+            var latestPosts = _context.BlogPosts
+                                      .OrderByDescending(p => p.DatePosted)
+                                      .Take(20)
+                                      .ToList();
 
-            return View(blogPosts);
+            var topUsers = _context.BlogPosts
+                                   .GroupBy(p => p.UserID)
+                                   .Select(group => new
+                                   {
+                                       UserId = group.Key,
+                                       PostCount = group.Count()
+                                   })
+                                   .OrderByDescending(u => u.PostCount)
+                                   .Take(5)
+                                   .Select(u => u.UserId)
+                                   .ToList();
+
+            var topUsersWithDetails = _context.Users.OfType<ApplicationUser>() 
+                                                  .Where(u => topUsers.Contains(u.Id))
+                                                  .ToList();
+
+            foreach (var user in topUsersWithDetails)
+            {
+                await _context.Entry(user)
+                    .Collection(u => u.Posts).LoadAsync();
+                await _context.Entry(user)
+                    .Collection(u => u.Comments).LoadAsync();
+
+                // Count the number of blog posts and comments.
+                var postCount = user?.Posts?.Count;
+                var commentCount = user?.Comments?.Count;
+
+                // Pass these to the view.
+                ViewBag.PostCount = postCount;
+                ViewBag.CommentCount = commentCount;
+            }
+
+            var model = new HomePageViewModel
+            {
+                LatestPosts = latestPosts,
+                TopUsers = topUsersWithDetails
+            };
+
+            return View(model);
         }
+
+        public Task<IActionResult> Posts(int? page)
+        {
+            var pageNumber = page ?? 1;  // if no page was specified in the querystring, default to the first page (1)
+            var pageSize = 12; // you can adjust the page size however you like
+            var posts = _context.BlogPosts.ToPagedList(pageNumber, pageSize);
+
+            return Task.FromResult<IActionResult>(View(posts));
+        }
+
 
         // GET: Blogs/Create
         public IActionResult Create()

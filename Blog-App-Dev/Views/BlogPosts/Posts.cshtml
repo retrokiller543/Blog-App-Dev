@@ -1,0 +1,42 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<Blog_App_Dev.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Posts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-12 col-sm-6 col-md-4">
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
+                    <p class="card-text">
+                        @if (item.Content.Length > 100)
+                        {
+                            @Html.Raw(item.Content.Substring(0, 100) + "...")
+                        }
+                        else
+                        {
+                            @Html.Raw(item.Content)
+                        }
+                    </p>
+                    <a asp-controller="BlogPosts" asp-action="Details" asp-route-id="@item.ID" class="btn btn-primary">Read More</a>
+                </div>
+                <div class="card-footer text-muted">
+                    Posted on @Html.DisplayFor(modelItem => item.DatePosted)
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Pagination -->
+<div class="text-center">
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+    @Html.PagedListPager(Model, page => Url.Action("Posts", new { page }))
+</div>
