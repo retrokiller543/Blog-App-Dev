@@ -83,13 +83,20 @@ footer {
     display: flex;
 }
 
-.card {
+.card-container {
     border: 1px solid #cccccc;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
     background-color: rgba(249, 249, 249, 0.5);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
 }
 
 .item-card-link {
@@ -182,3 +189,91 @@ ul.pagination {
             color: #fff;
             border-color: #007bff;
         }
+
+/* Styling for the User Profile Details view */
+
+/* Main title */
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+/* Subtitles */
+.subtitle {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 2rem 0;
+}
+
+/* User Information section */
+.user-info {
+    margin-bottom: 2rem;
+}
+
+/* User Information labels */
+.label {
+    font-weight: bold;
+}
+
+/* User Information text */
+.value {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Post and Comment section */
+.posts,
+.comments {
+    margin-top: 3rem;
+}
+
+    /* Post and Comment section titles */
+    .posts h3,
+    .comments h3 {
+        text-transform: uppercase;
+        letter-spacing: .1em;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 2rem 0;
+    }
+
+/* Post and Comment lists */
+.post-list,
+.comment-list {
+    padding: 0;
+    list-style: none;
+}
+
+/* Titles and Content for Posts and Comments */
+.post-title,
+.comment-title {
+    margin: 1.5rem 0 1rem;
+}
+
+.post-content,
+.comment-content {
+    font-size: 1rem;
+    margin: 1.5rem 0 1rem;
+}
+
+/* Post and Comment details */
+.post-item p:nth-of-type(2),
+.comment-item p:nth-of-type(2) {
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* Links */
+.post-link,
+.comment-link {
+    font-size: 1.1rem;
+    color: black;
+    text-decoration: none;
+}
+
+    .post-link:hover,
+    .comment-link:hover {
+        font-size: 1.1rem;
+        color: black;
+    }

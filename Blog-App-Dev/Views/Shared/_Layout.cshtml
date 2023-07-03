@@ -8,12 +8,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Tosic Blog</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Blog_App_Dev.styles.css" asp-append-version="true" />
+    
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://kit.fontawesome.com/008f334917.js" crossorigin="anonymous"></script>
+    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link id="main-css" rel="stylesheet" href="~/css/Light-Mode/light-mode.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Blog_App_Dev.styles.css" asp-append-version="true" />
+
+    <script>
+        (function () {
+            // Check if 'dark-mode' is set in localStorage
+            const darkModeEnabled = localStorage.getItem('dark-mode') === 'true';
+            const baseURL = window.location.origin;
+
+            // Set the main CSS file depending on the preference
+            document.getElementById('main-css').href = darkModeEnabled ? `${baseURL}/css/Dark-Mode/dark-mode.css` : `${baseURL}/css/Light-Mode/light-mode.css`;
+        })();
+    </script>
+
+
 </head>
 <body>
     <header>
@@ -69,6 +84,10 @@
                         }
                     </ul>
                     <partial name="_LoginPartial" />
+                    <!-- Theme button -->
+                    <button id="dark-mode-toggle" class="btn btn-light" onclick="toggleDarkMode()">
+                        <span id="dark-mode-icon" class="fa fa-moon-o"></span>
+                    </button>
                 </div>
             </div>
         </nav>
@@ -88,6 +107,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/dark-mode.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
