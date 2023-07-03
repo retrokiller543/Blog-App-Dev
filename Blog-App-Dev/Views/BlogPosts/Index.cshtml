@@ -14,7 +14,7 @@
                 <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })" class="item-card-link" id="post">
                     <div class="item-card item-card-hover">
                         <h3>@post.Title</h3>
-                        <p>@post.Content</p>
+                        <p>@Html.Raw(post.FormattedContent)</p>
                     </div>
                 </a>
             }

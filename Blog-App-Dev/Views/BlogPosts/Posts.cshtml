@@ -17,17 +17,17 @@
                     <p class="card-text">
                         @if (item.Content.Length > 100)
                         {
-                            @Html.Raw(item.Content.Substring(0, 100) + "...")
+                            @Html.Raw(item.FormattedContent.Substring(0, 100) + "...")
                         }
                         else
                         {
-                            @Html.Raw(item.Content)
+                            @Html.Raw(item.FormattedContent)
                         }
                     </p>
                     <a asp-controller="BlogPosts" asp-action="Details" asp-route-id="@item.ID" class="btn btn-primary">Read More</a>
                 </div>
                 <div class="card-footer text-muted">
-                    Posted on @Html.DisplayFor(modelItem => item.DatePosted)
+                    Posted on @Html.DisplayFor(modelItem => item.DatePosted) by @Html.DisplayFor(modelItem => item.User.UserName)
                 </div>
             </div>
         </div>
