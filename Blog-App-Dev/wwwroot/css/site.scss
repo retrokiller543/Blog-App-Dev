@@ -239,4 +239,12 @@ html[data-bs-theme="dark"] {
             }
         }
     }
+
+    footer {
+        .social-links {
+            a {
+                color: $text-color-light;
+            }
+        }
+    }
 }

@@ -27,6 +27,7 @@ function toggleDarkMode(isDarkMode) {
     const navLinks = document.querySelectorAll('.nav-link');
     const logout_btn = document.getElementById('logout-btn')
     const body = document.querySelector('body');
+    const darkText = document.querySelectorAll('.text-dark')
     if (isDarkMode) {
         body.classList.remove('bg-light')
         body.classList.add('bg-dark')
@@ -37,6 +38,10 @@ function toggleDarkMode(isDarkMode) {
         navLinks.forEach(link => link.classList.add('text-white'));
         logout_btn.classList.add('btn-light');
         logout_btn.classList.remove('btn-dark');
+        darkText.forEach((text) => {
+            text.classList.remove('text-dark')
+            text.classList.add('text-muted')
+        })
         //logout_btn.classList.remove('btn-outline-dark');
         //logout_btn.classList.add('btn-outline-light');
     } else {
@@ -49,6 +54,10 @@ function toggleDarkMode(isDarkMode) {
         navLinks.forEach(link => link.classList.remove('text-white'));
         logout_btn.classList.remove('btn-light');
         logout_btn.classList.add('btn-dark');
+        darkText.forEach((text) => {
+            text.classList.remove('text-muted')
+            text.classList.add('text-dark')
+        })
         //logout_btn.classList.add('btn-outline-dark');
         //logout_btn.classList.remove('btn-outline-light');
     }
