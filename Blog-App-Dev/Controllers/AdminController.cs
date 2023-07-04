@@ -86,14 +86,38 @@ namespace Blog_App_Dev.Controllers
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            var posts = await _context.BlogPosts.Include(p => p.User).ToListAsync();
-            var comments = await _context.CommentPosts.Include(p => p.User).ToListAsync();
+            var posts = await _context.BlogPosts.Where(p => p.UserID == id).ToListAsync();
+            var comments = await _context.CommentPosts.Where(p => p.UserID == id).ToListAsync();
+
             if (user == null)
             {
                 return NotFound();
             }
+
+            if (posts == null || comments == null)
+            {
+                var earlyResult = await _userManager.DeleteAsync(user);
+                if (earlyResult.Succeeded)
+                {
+                    return RedirectToAction("ManageUsers");
+                }
+                else
+                {
+                    // Handle the case when the deletion was not successful
+                    // For example, add the errors to the ModelState and return the same view
+                    foreach (var error in earlyResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(user);
+                }
+
+            }
+
             _context.CommentPosts.RemoveRange(comments);
+            await _context.SaveChangesAsync();
             _context.BlogPosts.RemoveRange(posts);
+            await _context.SaveChangesAsync();
 
             var result = await _userManager.DeleteAsync(user);
             if (result.Succeeded)

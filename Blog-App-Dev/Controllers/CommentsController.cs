@@ -9,6 +9,7 @@ using Blog_App_Dev.Data;
 using Blog_App_Dev.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection.Metadata;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Blog_App_Dev.Controllers
 {
@@ -24,48 +25,14 @@ namespace Blog_App_Dev.Controllers
             _context = context;
         }
 
-        // GET: Comments
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.CommentPosts.Include(c => c.Post).Include(c => c.User);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
-        // GET: Comments/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.CommentPosts == null)
-            {
-                return NotFound();
-            }
-
-            var comment = await _context.CommentPosts
-                .Include(c => c.Post)
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            return View(comment);
-        }
-
-        // GET: Comments/Create
-        public IActionResult Create(int postId)
-        {
-            ViewBag.PostID = postId;
-            return View();
-        }
-
         // POST: Comments/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int postID, [Bind("ID,Title,Content")] Comment comment)
         {
             comment.PostID = postID;
+            
             if (ModelState.IsValid)
             {
                 var currentUser = this.User;
@@ -77,34 +44,22 @@ namespace Blog_App_Dev.Controllers
             return View(comment);
         }
 
-        // GET: Comments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.CommentPosts == null)
-            {
-                return NotFound();
-            }
-
-            var comment = await _context.CommentPosts.FindAsync(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-            ViewData["PostID"] = new SelectList(_context.BlogPosts, "ID", "Content", comment.PostID);
-            ViewData["UserID"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", comment.UserID);
-            return View(comment);
-        }
-
         // POST: Comments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,DatePosted,UserID,PostID")] Comment comment)
         {
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
             if (id != comment.ID)
             {
                 return NotFound();
+            }
+
+            if (currentUserID != comment.UserID && !(currentUser.IsInRole("Admin")))
+            {
+                return Unauthorized();
             }
 
             if (ModelState.IsValid)
@@ -125,13 +80,14 @@ namespace Blog_App_Dev.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "BlogPosts", new { id = comment.PostID });
             }
             ViewData["PostID"] = new SelectList(_context.BlogPosts, "ID", "Content", comment.PostID);
             ViewData["UserID"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", comment.UserID);
             return View(comment);
         }
 
+        [Authorize]
         // GET: Comments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -149,9 +105,16 @@ namespace Blog_App_Dev.Controllers
                 return NotFound();
             }
 
-            return View(comment);
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
+            if (currentUserID == comment.UserID || currentUser.IsInRole("Admin"))
+            {
+                return View(comment);
+            }
+            return Unauthorized();
         }
 
+        [Authorize]
         // POST: Comments/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -162,13 +125,23 @@ namespace Blog_App_Dev.Controllers
                 return Problem("Entity set 'ApplicationDbContext.CommentPosts'  is null.");
             }
             var comment = await _context.CommentPosts.FindAsync(id);
-            if (comment != null)
+            int? postId = comment?.PostID;
+            var currentUser = this.User;
+            var currentUserID = _userManager.GetUserId(currentUser);
+            if (comment != null && (currentUserID == comment.UserID || currentUser.IsInRole("Admin")))
             {
                 _context.CommentPosts.Remove(comment);
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (postId == null)
+            {
+                return Problem();
+            } else
+            {
+                return RedirectToAction("Details", "BlogPosts", new { id = postId });
+            }
+
         }
 
         private bool CommentExists(int id)

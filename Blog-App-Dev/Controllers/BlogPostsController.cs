@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using System.Reflection.Metadata;
 using X.PagedList;
+using Markdig;
+using Ganss.Xss;
 
 namespace Blog_App_Dev.Controllers
 {
@@ -30,7 +32,7 @@ namespace Blog_App_Dev.Controllers
         {
             var latestPosts = _context.BlogPosts
                                       .OrderByDescending(p => p.DatePosted)
-                                      .Take(20)
+                                      .Take(10)
                                       .ToList();
 
             var topUsers = _context.BlogPosts
@@ -78,7 +80,7 @@ namespace Blog_App_Dev.Controllers
         {
             var pageNumber = page ?? 1;  // if no page was specified in the querystring, default to the first page (1)
             var pageSize = 12; // you can adjust the page size however you like
-            var posts = _context.BlogPosts.ToPagedList(pageNumber, pageSize);
+            var posts = _context.BlogPosts.Include(p => p.User).ToPagedList(pageNumber, pageSize);
 
             return Task.FromResult<IActionResult>(View(posts));
         }
@@ -106,8 +108,8 @@ namespace Blog_App_Dev.Controllers
             }
             return View(blog);
         }
-        [Authorize]
         // GET: BlogPosts/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.BlogPosts == null)
@@ -117,7 +119,8 @@ namespace Blog_App_Dev.Controllers
 
             var blogPost = await _context.BlogPosts
                 .Include(b => b.User)
-                .Include(b => b.Comments) // Include the comments related to the blog post
+                .Include(b => b.Comments)
+                    .ThenInclude(c => c.User)
                 .FirstOrDefaultAsync(m => m.ID == id);
             if (blogPost == null)
             {
@@ -125,10 +128,11 @@ namespace Blog_App_Dev.Controllers
             }
 
             ViewBag.PostID = blogPost.ID;
+            ViewData["Comment"] = new Comment();
 
             return View(blogPost);
-
         }
+
         [Authorize]
         // GET: BlogPosts/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -145,33 +149,42 @@ namespace Blog_App_Dev.Controllers
             }
             var currentUser = this.User;
             var currentUserID = _userManager.GetUserId(currentUser);
-            if (blogPost.UserID == currentUserID)
+            if (blogPost.UserID == currentUserID || currentUser.IsInRole("Admin"))
             {
                 return View(blogPost);
             }
-            return RedirectToAction(nameof(Index));
-            
+
+            ViewData["ErrorMessage"] = "You are not authorized to edit this blog post.";
+            return Unauthorized();
         }
 
         // POST: BlogPosts/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,DatePosted")] BlogPost blogPost)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,Title,Content,DatePosted,UserID")] BlogPost blogPost)
         {
             var currentUser = this.User;
             var currentUserID = _userManager.GetUserId(currentUser);
-            if (id != blogPost.ID && currentUserID != blogPost.UserID)
+
+            if (id != blogPost.ID)
             {
                 return NotFound();
+            }
+
+            if (currentUserID != blogPost.UserID && !(currentUser.IsInRole("Admin")))
+            {
+                return Unauthorized();
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+                    blogPost.Content = Markdown.ToHtml(blogPost.Content ?? string.Empty, pipeline);
+
                     _context.Update(blogPost);
                     await _context.SaveChangesAsync();
                 }
@@ -190,6 +203,7 @@ namespace Blog_App_Dev.Controllers
             }
             return View(blogPost);
         }
+
         [Authorize]
         // GET: BlogPosts/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -207,11 +221,11 @@ namespace Blog_App_Dev.Controllers
             }
             var currentUser = this.User;
             var currentUserID = _userManager.GetUserId(currentUser);
-            if (currentUserID ==  blogPost.UserID)
+            if (currentUserID ==  blogPost.UserID || currentUser.IsInRole("Admin"))
             {
                 return View(blogPost);
             }
-            return RedirectToAction(nameof(Index));
+            return Unauthorized();
         }
 
         // POST: BlogPosts/Delete/5
@@ -226,8 +240,14 @@ namespace Blog_App_Dev.Controllers
             var blogPost = await _context.BlogPosts.FindAsync(id);
             var currentUser = this.User;
             var currentUserID = _userManager.GetUserId(currentUser);
-            if (blogPost != null && currentUserID == blogPost.UserID)
+            if (blogPost != null && (currentUserID == blogPost.UserID || currentUser.IsInRole("Admin")))
             {
+                var comments = _context.CommentPosts.Where(m => m.PostID == blogPost.ID).ToList();
+                foreach ( var comment in comments)
+                {
+                    _context.CommentPosts.Remove(comment);
+                    await _context.SaveChangesAsync();
+                }
                 _context.BlogPosts.Remove(blogPost);
             }
             

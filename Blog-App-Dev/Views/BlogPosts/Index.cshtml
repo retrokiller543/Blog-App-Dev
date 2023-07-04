@@ -1,38 +1,36 @@
-﻿@model HomePageViewModel
-
-<main>
-    <div>
-        <a asp-controller="BlogPost" asp-action="Create">
-            Post something!    
+﻿<main>
+    <div class="mb-3 text-center">
+        <a asp-controller="BlogPost" asp-action="Create" class="btn btn-primary">
+            Post something!
         </a>
     </div>
-    <section class="container">
-        <div class="card">
-            <h2>Latest Posts</h2>
+    <section class="container py-5">
+        <div class="card p-3 mb-5">
+            <h2 class="mb-4">Latest Posts</h2>
             @foreach (var post in Model.LatestPosts)
             {
-                <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })" class="item-card-link" id="post">
-                    <div class="item-card item-card-hover">
-                        <h3>@post.Title</h3>
-                        <p>@post.Content</p>
+                <a href="@Url.Action("Details", "BlogPosts", new { id = post.ID })" class="text-decoration-none text-dark hover-text-light" id="post">
+                    <div class="card mb-3 p-2 item-card item-card-hover">
+                        <h3 class="card-title">@post.Title</h3>
+                        <p class="card-text">@Html.Raw(post.FormattedContent)</p>
                     </div>
                 </a>
             }
-            <a asp-controller="BlogPosts" asp-action="Posts">See More</a>
+            <a asp-controller="BlogPosts" asp-action="Posts" class="btn btn-secondary">See More</a>
         </div>
-        <div class="card">
-            <h2>Top Users</h2>
+        <div class="card p-3">
+            <h2 class="mb-4">Top Users</h2>
             @foreach (var user in Model.TopUsers)
             {
-                <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="item-card-link" id="user">
-                    <div class="item-card item-card-hover user">
-                        <h3>@user.UserName</h3>
-                        <p>Posts: @user?.Posts?.Count</p>
-                        <p>Comments: @user?.Comments?.Count</p>
+                <a href="@Url.Action("Details", "Profile", new { id = user.Id })" class="text-decoration-none text-dark hover-text-light" id="user">
+                    <div class="card mb-3 p-2 item-card item-card-hover user">
+                        <h3 class="card-title">@user.UserName</h3>
+                        <p class="card-text">Posts: @user?.Posts?.Count</p>
+                        <p class="card-text">Comments: @user?.Comments?.Count</p>
                     </div>
                 </a>
             }
-            <a>See More</a>
+            <a href="#" class="btn btn-secondary">See More</a>
         </div>
     </section>
 </main>

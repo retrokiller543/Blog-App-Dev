@@ -32,7 +32,7 @@
                         <a class="post-link" href="@Url.Action("Details", "BlogPosts", new { id = post.ID })">
                             <div >
                                 <h4 class="post-title">@post.Title</h4>
-                                <p class="post-content">@post.Content</p>
+                                <p class="post-content">@Html.Raw(post.FormattedContent)</p>
                                 <p class="post-date"><strong class="post-date-label">Date Posted:</strong> <span class="post-date-value">@post.DatePosted.ToShortDateString()</span></p>
                             </div>
                         </a>
@@ -59,7 +59,7 @@
                         <a class="comment-link" href="@Url.Action("Details", "BlogPosts", new { id = comment.PostID })">
                             <div>
                                 <h4 class="comment-title">@comment.Title</h4>
-                                <p class="comment-content">@comment.Content</p>
+                                <p class="comment-content">@Html.Raw(comment.FormattedContent)</p>
                                 <p class="comment-date"><strong class="comment-date-label">Date Posted:</strong> <span class="comment-date-value">@comment.DatePosted.ToShortDateString()</span></p>
                             </div>
                         </a>

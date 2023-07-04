@@ -1,70 +1,90 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
-
 @model Blog_App_Dev.Models.BlogPost
 
 @{
     ViewData["Title"] = "Details";
     string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
 }
 
 <h1>Details</h1>
 
-<div>
-    <h4>@Html.DisplayFor(model => model.Title)</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class="col-sm-10">
-            <a asp-controller="Profile" asp-action="Details" asp-route-id="@userId">@Html.DisplayFor(model => model.User.UserName)</a>
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DatePosted)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DatePosted)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Content)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Content)
-        </dd>
-    </dl>
-</div>
-@if (User.Identity.IsAuthenticated && (userId == Model.UserID || User.IsInRole("Admin")))
-{
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model?.ID">Edit</a> |
-        <a asp-action="Delete" asp-route-id="@Model?.ID">Delete</a>
-
+<div class="card">
+    <div class="card-header">
+        <h4>@Html.DisplayFor(model => model.Title)</h4>
     </div>
-}
-<a asp-action="Index">Back to List</a>
-<a href="@Url.Action("Create", "Comments", new { postId = ViewBag.PostID })" id="add-comment">Add Comment</a>
+    <div class="card-body">
+        <div>@Html.Raw(Model.FormattedContent)</div>
 
-<h3>Comments</h3>
+        <p><strong>Posted by:</strong> <a asp-controller="Profile" asp-action="Details" asp-route-id="@Model.UserID">@Html.DisplayFor(model => model.User.UserName)</a></p>
+        <p><strong>Date Posted:</strong> @Html.DisplayFor(model => model.DatePosted)</p>
+    </div>
+    @if (User.Identity.IsAuthenticated && (userId == Model.UserID || User.IsInRole("Admin")))
+    {
+        <div class="card-footer">
+            <a asp-action="Edit" asp-route-id="@Model?.ID" class="btn btn-primary">Edit</a>
+            <a asp-action="Delete" asp-route-id="@Model?.ID" class="btn btn-danger">Delete</a>
+        </div>
+    }
+</div>
+
+<div class="btn-toolbar">
+    <a asp-action="Posts" class="btn btn-primary mt-3" style="background-color: grey; border-color: grey;">Back to List</a>
+    <button id="addCommentButton" type="button" class="btn btn-secondary mt-3" style="background-color: rgb(13, 110, 253); border-color: rgb(13, 110, 253);">Add Comment</button>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        document.getElementById("addCommentButton").addEventListener("click", function () {
+            // Replace "commentForm" with the actual id of your form
+            var form = document.getElementById("commentForm");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        });
+    </script>
+}
+
+@Html.Hidden("PostID", (int)ViewBag.PostID)
+@{
+    var newComment = ViewData["Comment"] as Blog_App_Dev.Models.Comment;
+}
+
+<form method="post" asp-controller="Comments" asp-action="Create" asp-route-postId="@ViewBag.PostID" id="commentForm" style="display: none;">
+    <div class="form-group">
+        <label asp-for="@newComment.Title"></label>
+        <input class="form-control" asp-for="@newComment.Title" name="comment.Title" id="title-input" />
+    </div>
+    <div class="form-group">
+        <label asp-for="@newComment.Content"></label>
+        <textarea class="form-control" asp-for="@newComment.Content" name="comment.Content" id="content-input"></textarea>
+    </div>
+    <input type="submit" value="Post Comment" class="btn btn-primary" id="submit-btn" />
+</form>
+
+
+
+<h3 class="mt-5">Comments</h3>
 @if (Model?.Comments != null && Model.Comments.Any())
 {
     foreach (var comment in Model.Comments)
     {
-        <section class="comment">
-        <div>
-            <h4>@Html.DisplayFor(_ => comment.Title)</h4>
-            <p>@Html.DisplayFor(_ => comment.Content)</p>
-        </div>
-        @if (User.Identity.IsAuthenticated && (userId == comment.UserID || User.IsInRole("Admin")))
-        {
-            <div>
-                <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.ID">Edit</a> |
-                <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.ID">Delete</a>
-
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4>@Html.DisplayFor(_ => comment.Title)</h4>
             </div>
-        }
-        </section>
+            <div class="card-body">
+                <p>@Html.Raw(comment.FormattedContent)</p>
+                <p><strong>Posted by:</strong> <a asp-controller="Profile" asp-action="Details" asp-route-id="@comment.UserID">@Html.DisplayFor(_ => comment.User.UserName)</a> <strong>At: </strong> @Html.DisplayFor(_ => comment.DatePosted)</p>
+            </div>
+            @if (User.Identity.IsAuthenticated && (userId == comment.UserID || User.IsInRole("Admin")))
+            {
+                <div class="card-footer">
+                    <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.ID" class="btn btn-primary">Edit</a>
+                    <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.ID" class="btn btn-danger">Delete</a>
+                </div>
+            }
+        </div>
     }
 }
 else

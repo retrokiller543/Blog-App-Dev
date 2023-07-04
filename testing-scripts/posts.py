@@ -16,8 +16,8 @@ password = os.getenv("PASSWORD")
 
 client = RandomTextClient()
 
-# baseUrl = "https://localhost:7272"
-baseUrl = "https://tosic-blog.azurewebsites.net"
+baseUrl = "https://localhost:7272"
+# baseUrl = "https://tosic-blog.azurewebsites.net"
 post_ids = Queue()
 
 
@@ -46,9 +46,10 @@ def create_blog_post(driver, i):
         joke = df.iloc[0, 0]
     title_field = driver.find_element(by="id", value="post-title")
     content_field = driver.find_element(by="id", value="post-content")
+    submit_btn = driver.find_element(by="id", value="submit-post")
     title_field.send_keys(title)
     content_field.send_keys(joke)
-    content_field.send_keys(Keys.RETURN)
+    submit_btn.click()
     time.sleep(1)
 
 
@@ -56,7 +57,7 @@ def create_comment(driver, postId, thread_id):
     print(f"Thread: {thread_id} working on post with id: {postId}")
     driver.get(baseUrl + "/BlogPosts/Details/" + str(postId))
     time.sleep(1)
-    add_comment = driver.find_element(by="id", value="add-comment")
+    add_comment = driver.find_element(by="id", value="addCommentButton")
     add_comment.click()
     time.sleep(1)
     title_field = driver.find_element(by="id", value="title-input")
@@ -71,9 +72,8 @@ def create_comment(driver, postId, thread_id):
     time.sleep(1)
 
 
-
 def get_latest_post_id(driver):
-    driver.get(baseUrl)
+    driver.get(baseUrl + "/BlogPosts")
     time.sleep(1)
     post = driver.find_element(by="id", value="post")
     post.click()
@@ -83,12 +83,12 @@ def get_latest_post_id(driver):
     return latest_post_id
 
 
-def worker(thread_id, postIds):
+def worker(thread_id, postIds, num_posts):
     # initialise the driver
     driver = webdriver.Firefox()
     login(driver)
     # Creating blog posts
-    for i in range(6):
+    for i in range(num_posts):
         create_blog_post(driver, i)
     driver.get(baseUrl + "/BlogPosts")
     time.sleep(1)
@@ -103,21 +103,22 @@ def worker(thread_id, postIds):
 driver = webdriver.Firefox()
 login(driver)
 latest_post_id = get_latest_post_id(driver)
-print(latest_post_id)
 driver.quit()
 
 # Generate all post ids from latest_post_id to 5
-all_post_ids = list(range(latest_post_id, 4, -1))
+all_post_ids = list(range(latest_post_id, 393, -1))
 
-num_threads = 5
+num_threads = 7
+num_posts = 10
 
 # Split the post ids into num_threads parts
 post_ids_split = [all_post_ids[i::num_threads] for i in range(num_threads)]
+print(post_ids_split)
 
 # Create and start threads
 threads = []
 for i in range(num_threads):
-    t = threading.Thread(target=worker, args=(i, post_ids_split[i]))
+    t = threading.Thread(target=worker, args=(i, post_ids_split[i], num_posts))
     threads.append(t)
     t.start()
 
