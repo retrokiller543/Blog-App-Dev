@@ -9,14 +9,14 @@
 
 <h1>Details</h1>
 
-<div class="card-container">
+<div class="card">
     <div class="card-header">
         <h4>@Html.DisplayFor(model => model.Title)</h4>
     </div>
     <div class="card-body">
         <div>@Html.Raw(Model.FormattedContent)</div>
 
-        <p><strong>Posted by:</strong> <a asp-controller="Profile" asp-action="Details" asp-route-id="@userId">@Html.DisplayFor(model => model.User.UserName)</a></p>
+        <p><strong>Posted by:</strong> <a asp-controller="Profile" asp-action="Details" asp-route-id="@Model.UserID">@Html.DisplayFor(model => model.User.UserName)</a></p>
         <p><strong>Date Posted:</strong> @Html.DisplayFor(model => model.DatePosted)</p>
     </div>
     @if (User.Identity.IsAuthenticated && (userId == Model.UserID || User.IsInRole("Admin")))
@@ -69,13 +69,13 @@
 {
     foreach (var comment in Model.Comments)
     {
-        <div class="card-container mt-3">
+        <div class="card mt-3">
             <div class="card-header">
                 <h4>@Html.DisplayFor(_ => comment.Title)</h4>
             </div>
             <div class="card-body">
                 <p>@Html.Raw(comment.FormattedContent)</p>
-                <p><strong>Posted by:</strong> @Html.DisplayFor(_ => comment.User.UserName) <strong>At: </strong> @Html.DisplayFor(_ => comment.DatePosted)</p>
+                <p><strong>Posted by:</strong> <a asp-controller="Profile" asp-action="Details" asp-route-id="@comment.UserID">@Html.DisplayFor(_ => comment.User.UserName)</a> <strong>At: </strong> @Html.DisplayFor(_ => comment.DatePosted)</p>
             </div>
             @if (User.Identity.IsAuthenticated && (userId == comment.UserID || User.IsInRole("Admin")))
             {
