@@ -68,12 +68,19 @@
     }
 
     a, div {
+        .item-card {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
         .hover-text-light:hover {
             color: #f8f9fa !important; /* Light color on hover */
+            transform: scale(1.05);
         }
 
         .item-card-hover:hover {
             color: #808080 !important;
+            transform: scale(1.05);
         }
     }
 
@@ -182,12 +189,19 @@ html[data-bs-theme="dark"] {
     }
 
     a, div {
+        .item-card {
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
         .hover-text-light:hover {
             color: #f8f9fa !important; /* Light color on hover */
+            transform: scale(1.05);
         }
 
         .item-card-hover:hover {
             color: #f8f9fa !important;
+            transform: scale(1.05);
         }
     }
 

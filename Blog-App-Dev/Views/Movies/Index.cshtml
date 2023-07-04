@@ -5,54 +5,34 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form asp-action="SearchMovie" method="get">
-    <p>
-        Title: <input type="text" name="title" autofocus/>
-        <input type="submit" value="Search" />
-    </p>
-</form>
+<div class="container">
+    <form asp-action="SearchMovie" method="get" class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Title" name="title" aria-label="Search" autofocus />
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
 
-@if (Model != null && Model.Any())
-{
-    <h2>Search Results</h2>
+    @if (Model != null && Model.Any())
+    {
+        <h2 class="mt-5">Search Results</h2>
 
-    <section>
-        @foreach (var movie in Model)
-        {
-            <a href="@Url.Action("Details", "Movies", new { id = movie.ID })" class="item-card-link">
-                <section class="item-card item-card-hover">
-                    <h2 class="movie-title">@movie.Title</h2>
-                    <p class="movie-overview">@movie.Overview</p>
-
-                    @if (movie.Regions != null && movie.Regions.Any())
-                    {
-                        @foreach (var region in movie.Regions)
-                        {
-                            <h4 class="region-name">@region.RegionName</h4>
-
-                            @if (region.StreamingServices != null && region.StreamingServices.Any())
-                            {
-                                @foreach (var streamingService in region.StreamingServices)
-                                {
-                                    <div class="item-card">
-                                        <p class="streaming-service">@streamingService.Service</p>
-                                        <p class="streaming-service">@streamingService.Type</p>
-                                        <p class="streaming-service">@streamingService.Link</p>
-                                    </div>
-                                }
-                            }
-                        }
-                    }
-                </section>
-            </a>
-        }
-    </section>
-}
-else
-{
-    <p>No movies found.</p>
-}
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+        <div class="row">
+            @foreach (var movie in Model)
+            {
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <a href="@Url.Action("Details", "Movies", new { id = movie.ID })" class="text-decoration-none text-dark">
+                        <div class="card h-100 item-card item-card-hover">
+                            <div class="card-body">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <p class="card-text">@movie.Overview</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="mt-5">No movies found.</p>
+    }
+</div>

@@ -49,6 +49,7 @@ namespace Blog_App_Dev.Controllers
             if (moviesInDb.Any())
             {
                 // If any movies are found in the database, return them
+                ViewBag.Query = $"{title}";
                 return View(moviesInDb);
             }
 
@@ -212,6 +213,8 @@ namespace Blog_App_Dev.Controllers
                     .Include(m => m.Directors)
                     .Include(m => m.Genres)
                     .ToList();
+
+                ViewBag.Query = $"{title}";
 
                 return View(movies);
             }
