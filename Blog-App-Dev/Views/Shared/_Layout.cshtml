@@ -15,6 +15,7 @@
     <script src="https://kit.fontawesome.com/008f334917.js" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/PrismJS/prism.css" />
     <link rel="stylesheet" href="~/css/site.css"/>
 </head>
 <body class="bg-light">
@@ -103,7 +104,12 @@
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/PrismJS/prism.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/codeBlockDownload.js" asp-append-version="true"></script>
+    <script>
+        Prism.highlightAll()
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

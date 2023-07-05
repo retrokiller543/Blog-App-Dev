@@ -15,14 +15,7 @@
                 <div class="card-body">
                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
                     <p class="card-text">
-                        @if (item.Content.Length > 100)
-                        {
-                            @Html.Raw(item.FormattedContent.Substring(0, 100) + "...")
-                        }
-                        else
-                        {
-                            @Html.Raw(item.FormattedContent)
-                        }
+                        @Html.Raw(item.Excerpt)
                     </p>
                     <a asp-controller="BlogPosts" asp-action="Details" asp-route-id="@item.ID" class="btn btn-primary">Read More</a>
                 </div>
