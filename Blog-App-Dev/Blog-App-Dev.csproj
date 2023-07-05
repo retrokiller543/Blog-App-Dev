@@ -25,8 +25,10 @@
     <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.2.2" />
     <PackageReference Include="Azure.Identity" Version="1.9.0" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.5.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.48" />
     <PackageReference Include="HtmlSanitizer" Version="8.0.645" />
     <PackageReference Include="Markdig" Version="0.31.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.15" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.18" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.18" />
@@ -39,6 +41,7 @@
     <PackageReference Include="RestSharp" Version="110.2.0" />
     <PackageReference Include="SendGrid" Version="9.28.1" />
     <PackageReference Include="Unsplash.Net" Version="1.0.0" />
+    <PackageReference Include="WebStoating.Markdig.PrismWithPlugins" Version="1.0.0" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
   </ItemGroup>
 

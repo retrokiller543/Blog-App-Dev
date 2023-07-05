@@ -66,6 +66,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 builder.Services.AddRazorPages();
+builder.Services.AddApplicationInsightsTelemetry();
 
 var app = builder.Build();
 
@@ -87,9 +88,9 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-    // app.UseDeveloperExceptionPage();
-    app.UseExceptionHandler("/Error");
-    app.UseStatusCodePagesWithReExecute("/Error/{0}");
+    app.UseDeveloperExceptionPage();
+    // app.UseExceptionHandler("/Error");
+    // app.UseStatusCodePagesWithReExecute("/Error/{0}");
 }
 else
 {
