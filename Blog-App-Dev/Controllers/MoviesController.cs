@@ -15,248 +15,261 @@ using NuGet.ProjectModel;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using RapidAPI.StreamingAvailability.Client;
+using RapidAPI.StreamingAvailability.Client.Models;
 
 namespace Blog_App_Dev.Controllers
 {
-    [Authorize(Roles = "User,Admin")]
-    public class MoviesController : Controller
+  [Authorize(Roles = "User,Admin")]
+  public class MoviesController : Controller
+  {
+    private readonly ApplicationDbContext _context;
+
+    private readonly IConfiguration _configuration;
+
+    private readonly Client client;
+
+    public MoviesController(ApplicationDbContext context, IConfiguration configuration)
     {
-        private readonly ApplicationDbContext _context;
-
-        private readonly IConfiguration _configuration;
-
-        public MoviesController(ApplicationDbContext context, IConfiguration configuration)
-        {
-            _context = context;
-            _configuration = configuration;
-        }
-
-
-        public IActionResult SearchMovie(string title)
-        {
-            string apiKey = _configuration["RapidAPIKey"];
-
-
-            var moviesInDb = _context.Movies
-                .Where(predicate: m => m.Title.Contains(title))
-                    .Include(m => m.Regions)
-                    .ThenInclude(r => r.StreamingServices)
-                    .Include(m => m.Cast)
-                    .Include(m => m.Directors)
-                    .Include(m => m.Genres)
-                .ToList();
-
-            if (moviesInDb.Any())
-            {
-                // If any movies are found in the database, return them
-                ViewBag.Query = $"{title}";
-                return View(moviesInDb);
-            }
-
-            var client = new RestClient("https://streaming-availability.p.rapidapi.com/v2/search/title?title=" + title + "&country=se&show_type=movie&output_language=en");
-            var request = new RestRequest();
-            request.AddHeader("X-RapidAPI-Key", apiKey);
-            request.AddHeader("X-RapidAPI-Host", "streaming-availability.p.rapidapi.com");
-            RestResponse response = client.Execute(request);
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-                JObject json = JObject.Parse(response.Content);
-                foreach (var (movieData, movie) in from movieData in json.GetValue("result")
-                                                   let movie = new Movie
-                                                   {
-                                                       Type = movieData.GetValue<string>("type"),
-                                                       Title = movieData.GetValue<string>("title"),
-                                                       Overview = movieData.GetValue<string>("overview"),
-                                                       Regions = new List<RegionInfo>(),
-                                                       Cast = new List<Actor>(),
-                                                       Directors = new List<Director>(),
-                                                       ReleaseYear = movieData.GetValue<int>("year"),
-                                                       imdbId = movieData.GetValue<string>("imdbId"),
-                                                       imdbRating = movieData.GetValue<int>("imdbRating"),
-                                                       imdbVoteCount = movieData.GetValue<int>("imdbVoteCount"),
-                                                       tmdbId = movieData.GetValue<int>("tmdbId"),
-                                                       tmdbRating = movieData.GetValue<int>("tmdbRating"),
-                                                       OriginalTitle = movieData.GetValue<string>("originalTitle"),
-                                                       BackdropPath = movieData.GetValue<string>("backdropPath"),
-                                                       Runtime = movieData.GetValue<int>("runtime"),
-                                                       Trailer = movieData.GetValue<string>("youtubeTrailerVideoLink"),
-                                                       TrailerID = movieData.GetValue<string>("youtubeTrailerVideoId"),
-                                                       PosterPath = movieData.GetValue<string>("posterPath"),
-                                                       Tagline = movieData.GetValue<string>("tagline")
-                                                   }
-                                                   select (movieData, movie))
-                {
-                    /* Getting all the streaming services and the info from them */
-                    foreach (KeyValuePair<string, JToken> region in movieData["streamingInfo"].ToObject<JObject>())
-                    {
-                        var regionInfo = new RegionInfo
-                        {
-                            RegionName = region.Key,
-                            StreamingServices = new List<StreamingService>(),
-                            MovieID = movie?.ID,
-                            Movie = movie
-                        };
-
-                        foreach (KeyValuePair<string, JToken> service in region.Value.ToObject<JObject>())
-                        {
-                            foreach (JObject info in service.Value.ToObject<JArray>())
-                            {
-                                var streamingService = new StreamingService
-                                {
-                                    Service = service.Key,
-                                    Type = info.GetValue<string>("type"),
-                                    Quality = info.GetValue<string>("quality"),
-                                    AddOn = info.GetValue<string>("addOn"),
-                                    Link = info.GetValue<string>("link"),
-                                    watchLink = info.GetValue<string>("watchLink"),
-                                    Audios = new List<Audios>(),
-                                    Subtitles = new List<Subtitles>(),
-                                    RegionInfoID = regionInfo.RegionID,
-                                    RegionInfo = regionInfo
-                                };
-
-                                if (info.TryGetValue("audios", out JToken? audiosList) && audiosList.HasValues)
-                                {
-                                    foreach (JObject audio in audiosList.ToObject<JArray>())
-                                    {
-                                        var audios = new Audios
-                                        {
-                                            Language = audio.GetValue<string>("language"),
-                                            Region = audio.GetValue<string>("region"),
-                                            StreamingServiceID = streamingService.ID,
-                                            StreamingService = streamingService
-                                        };
-                                        streamingService.Audios.Add(audios);
-                                    }
-                                }
-
-                                if (info.TryGetValue("subtitles", out JToken? subtitlesList) && subtitlesList.HasValues)
-                                {
-                                    foreach (JObject subtitle in subtitlesList.ToObject<JArray>())
-                                    {
-                                        var subtitles = new Subtitles
-                                        {
-                                            Language = subtitle["locale"].ToObject<JObject>().GetValue<string>("language"),
-                                            Region = subtitle["locale"].ToObject<JObject>().GetValue<string>("region"),
-                                            ClosedCaptions = subtitle["locale"].ToObject<JObject>().GetValue<bool>("closedCaptions"),
-                                            StreamingServiceID = streamingService.ID,
-                                            StreamingService = streamingService
-                                        };
-                                        streamingService.Subtitles.Add(subtitles);
-                                    }
-                                }
-
-                                regionInfo.StreamingServices.Add(streamingService);
-                            }
-                        }
-
-                        movie?.Regions.Add(regionInfo);
-                    }
-                    /* Add all Generas, actors and directors */
-                    JToken cast = movieData["cast"];
-                    if (cast != null)
-                    {
-                        foreach (var person in cast)
-                        {
-                            var actor = new Actor
-                            {
-                                Name = (string)person,
-                                MovieID = movie?.ID,
-                                Movie = movie
-                            };
-                            movie?.Cast.Add(actor);
-                        }
-                    }
-
-                    JToken directors = movieData["directors"];
-                    if (directors != null)
-                    {
-                        foreach (var person in directors)
-                        {
-                            var director = new Director
-                            {
-                                Name = (string)person,
-                                MovieID = movie?.ID,
-                                Movie = movie
-                            };
-                            movie?.Directors.Add(director);
-                        }
-                    }
-
-                    JToken genresList = movieData["genres"];
-                    if (genresList != null)
-                    {
-                        movie.Genres = new List<Genre>();
-
-                        foreach (JObject genre in genresList.ToObject<JArray>())
-                        {
-                            var newGenre = new Genre
-                            {
-                                Name = genre.GetValue<string>("name"),
-                                MovieID = movie.ID,
-                                Movie = movie,
-                            };
-
-                            movie.Genres.Add(newGenre);
-                        }
-                    }
-
-                    _context.Movies.Add(movie);
-                    _context.SaveChanges();
-                }
-                var movies = _context.Movies
-                    .Where(m => m.Title.Contains(title))
-                    .Include(m => m.Regions)
-                    .ThenInclude(r => r.StreamingServices)
-                    .Include(m => m.Cast)
-                    .Include(m => m.Directors)
-                    .Include(m => m.Genres)
-                    .ToList();
-
-                ViewBag.Query = $"{title}";
-
-                return View(movies);
-            }
-
-            return View("Error"); // return an error view if the API call was not successful
-        }
-
-        // GET: Movies
-        public async Task<IActionResult> Index()
-        {
-              return _context.Movies != null ? 
-                          View(await _context.Movies
-                            .Include(m => m.Regions)
-                            .ThenInclude(r => r.StreamingServices)
-                            .Include(m => m.Cast)
-                            .Include(m => m.Directors)
-                            .Include(m => m.Genres)
-                            .ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Movies'  is null.");
-        }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Movies == null)
-            {
-                return NotFound();
-            }
-
-            var movie = await _context.Movies
-                .Include(m => m.Regions)
-                .ThenInclude(r => r.StreamingServices)
-                .Include(m => m.Cast)
-                .Include(m => m.Directors)
-                .Include(m => m.Genres)
-                .FirstOrDefaultAsync(m => m.ID == id);
-
-            if (movie == null)
-            {
-                return NotFound();
-            }
-
-            return View(movie);
-        } 
+      _context = context;
+      _configuration = configuration;
+      string apiKey = _configuration["RapidAPIKey"];
+      client = new Client(apiKey);
     }
+
+
+    public IActionResult SearchMovie(string title, string type)
+    {
+
+      // PROBLEM: if users search for movie and we save it we will save the movie
+      // but if we then search for the same title but a series or all we will not know 
+      // if we have that data saved already or not. i should make a system to check that and also check last search date
+      // to see if we need to update the DB
+      var moviesInDb = _context.Movies
+          .Where(predicate: m => m.Title.Contains(title))
+              .Include(m => m.Regions)
+              .ThenInclude(r => r.StreamingServices)
+              .Include(m => m.Cast)
+              .Include(m => m.Directors)
+              .Include(m => m.Genres)
+          .ToList();
+
+      if (moviesInDb.Any())
+      {
+        // If any movies are found in the database, return them
+        ViewBag.Query = $"{title}";
+        return View(moviesInDb);
+      } else
+      {
+        var responsMovies = client.SearchByTitle(title, "se", type, "en");
+        if (responsMovies.Any())
+        {
+          foreach (var movie in responsMovies)
+          {
+            SaveMovie(movie);
+          }
+          var movies = _context.Movies
+            .Where(m => m.Title.Contains(title))
+            .Include(m => m.Regions)
+            .ThenInclude(r => r.StreamingServices)
+            .Include(m => m.Cast)
+            .Include(m => m.Directors)
+            .Include(m => m.Genres)
+            .ToList();
+
+          ViewBag.Query = $"{title}";
+
+          return View(movies);
+        } else
+        {
+          return NotFound();
+        }
+      }
+    }
+
+    // GET: Movies
+    public async Task<IActionResult> Index()
+    {
+      return _context.Movies != null ?
+                  View(await _context.Movies
+                    .Include(m => m.Regions)
+                    .ThenInclude(r => r.StreamingServices)
+                    .Include(m => m.Cast)
+                    .Include(m => m.Directors)
+                    .Include(m => m.Genres)
+                    .ToListAsync()) :
+                  Problem("Entity set 'ApplicationDbContext.Movies'  is null.");
+    }
+
+    public async Task<IActionResult> Details(int? id)
+    {
+      if (id == null || _context.Movies == null)
+      {
+        return NotFound();
+      }
+
+      var movie = await _context.Movies
+          .Include(m => m.Regions)
+          .ThenInclude(r => r.StreamingServices)
+          .Include(m => m.Cast)
+          .Include(m => m.Directors)
+          .Include(m => m.Genres)
+          .FirstOrDefaultAsync(m => m.ID == id);
+
+      if (movie == null)
+      {
+        return NotFound();
+      }
+
+      return View(movie);
+    }
+
+    public void SaveMovie(Show show)
+    {
+      if (show is RapidAPI.StreamingAvailability.Client.Models.Movie movie)
+      {
+        Models.Movie newMovie = new Models.Movie
+        {
+          Type = movie.Type,
+          Title = movie.Title,
+          BackdropPath = movie.BackdropPath,
+          imdbId = movie.imdbId,
+          imdbRating = movie.imdbRating,
+          imdbVoteCount = movie.imdbVoteCount,
+          OriginalLanguage = movie.OriginalLanguage,
+          OriginalTitle = movie.OriginalTitle,
+          PosterPath = movie.PosterPath,
+          Overview = movie.Overview,
+          ReleaseYear = movie.ReleaseYear,
+          Runtime = movie.Runtime,
+          Tagline = movie.Tagline,
+          tmdbId = movie.tmdbId,
+          tmdbRating = movie.tmdbRating,
+          Trailer = movie.Trailer,
+          TrailerID = movie.TrailerID,
+          Cast = new List<Actor>(),
+          Directors = new List<Director>(),
+          Regions = new List<Models.RegionInfo>(),
+          Genres = new List<Models.Genre>(),
+        };
+
+        if (movie.Cast.Count > 0)
+        {
+          foreach (var item in movie.Cast)
+          {
+            Actor actor = new()
+            {
+              Name = item.Name,
+              MovieID = newMovie?.ID,
+              Movie = newMovie,
+            };
+
+            newMovie?.Cast?.Add(actor);
+          }
+        }
+
+        if (movie.Directors.Count > 0)
+        {
+          foreach (var item in movie.Directors)
+          {
+            Director director = new Director
+            {
+              Name = item.Name,
+              MovieID = newMovie?.ID,
+              Movie = newMovie,
+            };
+
+            newMovie?.Directors?.Add(director);
+          }
+        }
+
+        if (movie.Regions.Count > 0)
+        {
+          foreach(var item in movie.Regions)
+          {
+            Models.RegionInfo region = new()
+            {
+              MovieID = newMovie?.ID,
+              Movie = newMovie,
+              RegionName = item.RegionName,
+              StreamingServices = new List<Models.StreamingService>(),
+            };
+
+            if (item.StreamingServices.Count > 0)
+            {
+              foreach(var service in item.StreamingServices)
+              {
+                Models.StreamingService newService = new()
+                {
+                  AddOn = service.AddOn,
+                  Link = service.Link,
+                  Quality = service.Quality,
+                  RegionInfo = region,
+                  RegionInfoID = region?.RegionID,
+                  Service = service.Service,
+                  Type = service.Type,
+                  watchLink = service.watchLink,
+                  Audios = new List<Models.Audios>(),
+                  Subtitles = new List<Models.Subtitles>()
+                };
+
+                if (service.Subtitles.Count > 0)
+                {
+                  foreach (var subtitle in service.Subtitles)
+                  {
+                    Models.Subtitles newSubtitles = new()
+                    {
+                      ClosedCaptions = subtitle.ClosedCaptions,
+                      Language = subtitle.Language,
+                      Region = subtitle.Region,
+                      StreamingServiceID = newService?.ID,
+                      StreamingService = newService
+                    };
+                    newService?.Subtitles?.Add(newSubtitles);
+                  }
+                }
+
+                if (service.Audios.Count > 0)
+                {
+                  foreach (var audio in service.Audios)
+                  {
+                    Models.Audios newAudio = new()
+                    {
+                      Language = audio.Language,
+                      Region = audio.Region,
+                      StreamingServiceID = newService?.ID,
+                    };
+                    newAudio.StreamingService = newService;
+                    newService?.Audios?.Add(newAudio);
+                  }
+                }
+
+                region?.StreamingServices?.Add(newService);
+              }
+            }
+
+            newMovie?.Regions?.Add(region);
+          }
+        }
+
+        if (movie.Genres?.Count > 0)
+        {
+          foreach(var genres in movie.Genres)
+          {
+            Models.Genre genre = new()
+            {
+              Name = genres.Name,
+              Movie = newMovie,
+              MovieID = newMovie.ID
+            };
+
+            newMovie.Genres?.Add(genre);
+          }
+        }
+
+        _context.Movies.Add(newMovie);
+        _context.SaveChanges();
+      }
+    }
+  }
 }

@@ -8,8 +8,14 @@
 <div class="container">
     <form asp-action="SearchMovie" method="get" class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="search" placeholder="Title" name="title" aria-label="Search" autofocus />
+        <select class="form-control mr-sm-2" name="type">
+            <option value="movies">Movies</option>
+            <option value="series">Series</option>
+            <option value="all">Both</option>
+        </select>
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
     </form>
+
 
     @if (Model != null && Model.Any())
     {
